@@ -7,6 +7,7 @@ import re
 import subprocess
 import time
 
+
 class control_screen(elements.screen):
     """
     [summary]
@@ -23,28 +24,28 @@ class control_screen(elements.screen):
         def multiplayer_join_join_button():
             name = self.main_win.inputbox.text
             ip = self.multiplayer_join.inputbox.text
-            # match = re.match(r'(\d\d?\d?\.){3}\d\d?\d?', ip)
-            # if not match:
-            #     return
+            match = re.match(r'(\d{1,3}\.){3}\d{1,3}', ip)
+            if not match:
+                return
 
-            # sections = ip.split('.')
-            # valid = all([0 < int(num) < 256 for num in sections])
-            # if not valid:
-            #     return
+            sections = ip.split('.')
+            valid = all([0 <= int(num) <= 255 for num in sections])
+            if not valid:
+                return
 
             self.game = game_window(w, h, ip, name)
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
         def singleplayer_join():
-            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'], shell=True, stdin=None, stdout=None,
+                             stderr=None, close_fds=True)
             time.sleep(1)
             # os.system(r"start /wait cmd /c python .\connection\server.py")
             name = self.main_win.inputbox.text
             self.game = game_window(w, h, '127.0.0.1', name)
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
-
 
         # create subwindows
         self.main_win = primary_screen(w, h)

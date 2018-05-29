@@ -5,6 +5,7 @@ import socket
 import threading
 from math import atan2
 
+
 class client(object):
     """[summary]
 
@@ -35,7 +36,7 @@ class client(object):
         print 'update'
         self.update_angle()
         self.update_data()
-    
+
     def update_angle(self):
         cx, cy = pygame.display.get_surface().get_size()
         cx, cy = cx / 2, cy / 2
@@ -44,7 +45,7 @@ class client(object):
         dy = py - cy
         angle = atan2(dy, dx)
         protocol.send_data(self.sock, protocol.snake_change_angle(angle))
-    
+
     def update_data(self):
         while True:
             try:
@@ -58,7 +59,7 @@ class client(object):
 
             if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.new:
                 # print 'new'
-                snake = game.objects.snake.create_snake(data['head'], data['name'], data['mass'],  data['tail'])
+                snake = game.objects.snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
                 self.snakes[data['id']] = snake
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.full_update:
                 # print 'mass', self.snakes[data['id']].mass, type(self.snakes[data['id']].mass)
@@ -66,14 +67,14 @@ class client(object):
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.delete:
                 del self.snakes[data['id']]
             elif data['type'] == protocol.Type.ORB and data['subtype'] == protocol.Subtype.ORB.new:
-                orb = game.objects.orb(data['x'], data['y'], data['mass'], (25,178,2))
+                orb = game.objects.orb(data['x'], data['y'], data['mass'], (25, 178, 2))
                 self.orbs[data['id']] = orb
             elif data['type'] == protocol.Type.ORB and data['subtype'] == protocol.Subtype.ORB.delete:
                 del self.orbs[data['id']]
 
     def render(self, surface):
         print 'render'
-        surface.fill((0,0,0))
+        surface.fill((0, 0, 0))
 
         for snake in self.snakes.itervalues():
             snake.render(surface)

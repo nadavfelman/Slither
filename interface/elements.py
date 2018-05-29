@@ -20,7 +20,8 @@ class Button(object):
     COLOR_CLICK = GRAY2
     COLOR_SECONDARY = BLACK
 
-    def __init__(self, x, y, w, h, text='', text_color=None, regular=None, hover=None, click=None, border_color=None, border_size=None, fnc=None, fnc_args=[], font_name=None, font_size=None):
+    def __init__(self, x, y, w, h, text='', text_color=None, regular=None, hover=None, click=None, border_color=None,
+                 border_size=None, fnc=None, fnc_args=[], font_name=None, font_size=None):
         self.rect = pygame.Rect(int(round(x)), int(
             round(y)), int(round(w)), int(round(h)))
         self.text = text
@@ -101,7 +102,8 @@ class InputBox(object):
     FONT_NAME = None
     BORDER_SIZE = 0
 
-    def __init__(self, x, y, w, h, text='', base_color=None, active_color=None, inactive_color=None, active_tcolor=None, inactive_tcolor=None, font_name=None, font_size=None, border_size=None):
+    def __init__(self, x, y, w, h, text='', base_color=None, active_color=None, inactive_color=None, active_tcolor=None,
+                 inactive_tcolor=None, font_name=None, font_size=None, border_size=None):
         self.base_color = base_color or InputBox.COLOR_BASE
         self.active_color = active_color or InputBox.COLOR_ACTIVE
         self.inactive_color = inactive_color or InputBox.COLOR_INACTIVE
@@ -109,7 +111,7 @@ class InputBox(object):
         self.inactive_tcolor = inactive_tcolor or InputBox.COLOR_TEXT_INACTIVE
         self.color = self.inactive_color
         self.tcolor = self.inactive_tcolor
-        
+
         self.font_size = int(round(font_size or InputBox.FONT_SIZE))
         self.font = pygame.font.Font(font_name or InputBox.FONT_NAME, self.font_size)
         self.default_text = text
@@ -120,7 +122,7 @@ class InputBox(object):
         self.rect = pygame.Rect(int(round(x)), int(round(y)), int(round(w)), int(round(h)))
         self.active = False
         self.done_action = False
-        self.mirgins = [int(round(h)) / 2 -self.font.get_height() / 2, 0.4 * self.font_size]
+        self.mirgins = [int(round(h)) / 2 - self.font.get_height() / 2, 0.4 * self.font_size]
         self.limit = 16
 
     def handle_event(self, event):
@@ -147,6 +149,10 @@ class InputBox(object):
 
         if event.type == pygame.KEYDOWN:
             if self.active:
+                if not self.done_action:
+                    if self.text == self.default_text:
+                        self.done_action = True
+                        self.text = ''
                 if event.key == pygame.K_ESCAPE:
                     self.active = False
                     self.done_action = False
@@ -154,9 +160,6 @@ class InputBox(object):
                     self.tcolor = self.inactive_tcolor
                     if self.text == '':
                         self.text = self.default_text
-                elif not self.done_action:
-                    self.done_action = True
-                    self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
@@ -283,7 +286,7 @@ class screen(object):
     def render(self, surface):
         if not self.active:
             return
-        
+
         if self.next_render_full:
             self.full_render(surface)
             self.next_render_full = False
@@ -330,14 +333,14 @@ class screen(object):
     def handle_event(self, event):
         if not self.active:
             return
-            
+
         for element in self.elements_objs:
             if getattr(element, 'need_events', None):
                 element.handle_event(event)
 
         for window in self.windows_objs:
             window.handle_event(event)
-    
+
     def set_actives(self, *args):
         for window in self.windows_objs:
             if window in args:

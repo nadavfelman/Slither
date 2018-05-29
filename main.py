@@ -2,6 +2,7 @@ import ctrlVars
 import pygame
 import interface
 
+
 def main():
     # pygame inizializition
     # display set up
@@ -20,7 +21,7 @@ def main():
         key_mods = pygame.key.get_mods()
         alt_held = key_mods & pygame.KMOD_ALT
         ctrl_held = key_mods & pygame.KMOD_CTRL
-        
+
         for event in pygame.event.get():
             # exit if pressed on the X (top right)
             if event.type == pygame.QUIT:
@@ -38,6 +39,7 @@ def main():
         ps.render(display)
         pygame.display.flip()
         CLOCK.tick(60)
+
 
 if __name__ == '__main__':
     main()

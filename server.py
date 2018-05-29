@@ -84,6 +84,7 @@ class client_connection(threading.Thread):
         with clientsLock:
             del clients[self.key]
 
+
 def main():
     global game_data
     global dataLock
@@ -107,7 +108,6 @@ def main():
         with dataLock:
             game_data.update()
             data = game_data.get_update()
-
 
             for client in clients.iterkeys():
                 clients[client].extend(data)
