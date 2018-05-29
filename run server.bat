@@ -1,1 +1,1 @@
-start cmd /k python connection\server.py
+start cmd /k python server.py

@@ -37,7 +37,7 @@ class control_screen(elements.screen):
             self.set_actives(self.game)
 
         def singleplayer_join():
-            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\connection\server.py'], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'], shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
             time.sleep(1)
             # os.system(r"start /wait cmd /c python .\connection\server.py")
             name = self.main_win.inputbox.text

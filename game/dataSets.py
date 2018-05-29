@@ -1,5 +1,5 @@
 import objects
-import protocol
+import connection.protocol as protocol
 
 class dataBase(object):
     """
@@ -28,6 +28,9 @@ class dataBase(object):
 
     def get_update(self):
         update = []
+        print 'data update'
         for id_, obj in self.last_update:
-            update.append(protocol.snake_full_update(id_, obj.head.location, [t.location for t in obj.tail]))
-        return  update
+            data = protocol.snake_full_update(id_, obj.mass,obj.head.location, [t.location for t in obj.tail])
+            print 'up', ''.join([r'\x{:x}'.format(ord(c)) for c in data])
+            update.append(data)
+        return update

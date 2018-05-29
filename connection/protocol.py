@@ -12,7 +12,7 @@ This has variables that are important to the comunication
 
 """
 
-PORT = 52377
+PORT = 52378
 
 """
 Enums
@@ -33,6 +33,7 @@ class Type:
     BOARD = 3
     DISCONNECTION = 4
     INITIAL = 5
+    CONTROL = 8
 
     # management/update
     SNAKE = 6
@@ -76,6 +77,9 @@ class Subtype:
         server = 0
         client = 1
 
+    class CONTROL:
+        stream_end = 0
+
 
 """
 Builders
@@ -87,38 +91,58 @@ this has functions to build all the possible message types
 
 def error_name_error():
     message = 'This name is already taken.'
-    return struct.pack('!HH', Type.ERROR, Subtype.ERROR.name_error) + message
+    data = struct.pack('!H', Type.ERROR)
+    data += struct.pack('!H', Subtype.ERROR.name_error)
+    data += message
+    return data
 
 
 def error_full_server():
     message = 'Server in full entry denied'
-    return struct.pack('!HH', Type.ERROR, Subtype.ERROR.full_server) + message
+    data = struct.pack('!H', Type.ERROR)
+    data += struct.pack('!H', Subtype.ERROR.full_server)
+    data += message
+    return data
 
 
 def name_request():
-    return struct.pack('!HH', Type.NAME, Subtype.NAME.request)
+    data = struct.pack('!H', Type.NAME)
+    data += struct.pack('!H', Subtype.NAME.request)
+    return data
 
 
 def name_response(name):
-    data = struct.pack('!HH', Type.NAME, Subtype.NAME.response)
+    data = struct.pack('!H', Type.NAME)
+    data += struct.pack('!H', Subtype.NAME.response)
     data += name
     return data
 
 
 def id_send(id_):
-    return struct.pack('!HH', Type.ID, Subtype.ID.send) + id_
+    data = struct.pack('!H', Type.ID)
+    data += struct.pack('!H', Subtype.ID.send)
+    data += id_
+    return data
 
 
 def id_confirm():
-    return struct.pack('!HH', Type.ID, Subtype.ID.confirm)
+    data = struct.pack('!H', Type.ID)
+    data += struct.pack('!H', Subtype.ID.confirm)
+    return data
 
 
 def board_send_dimensions(width, height):
-    return struct.pack('!HHHH', Type.BOARD, Subtype.BOARD.send_dimensions, width, height)
+    data = struct.pack('!H', Type.BOARD)
+    data += struct.pack('!H', Subtype.BOARD.send_dimensions)
+    data += struct.pack('!H', width)
+    data += struct.pack('!H', height)
+    return data
 
 
 def board_confirm_dimensions():
-    return struct.pack('!HHHH', Type.BOARD, Subtype.BOARD.confirm_dimensions)
+    data = struct.pack('!H', Type.BOARD)
+    data += struct.pack('!H', Subtype.BOARD.confirm_dimensions)
+    return data
 
 
 def board_request_location():
@@ -126,19 +150,28 @@ def board_request_location():
 
 
 def board_send_location(x, y):
-    return struct.pack('!HHff', Type.BOARD, Subtype.BOARD.send_location, x, y)
+    data = struct.pack('!H', Type.BOARD)
+    data += struct.pack('!H', Subtype.BOARD.send_location)
+    data += struct.pack('!f', x)
+    data += struct.pack('!f', y)
+    return data
 
 
 def disconnection_announce():
-    return struct.pack('!HH', Type.DISCONNECTION, Subtype.DISCONNECTION.announce)
+    data = struct.pack('!H', Type.DISCONNECTION)
+    data += struct.pack('!H', Subtype.DISCONNECTION.announce)
+    return data
 
 
 def disconnection_confirm():
-    return struct.pack('!HH', Type.DISCONNECTION, Subtype.DISCONNECTION.confirm)
+    data = struct.pack('!H', Type.DISCONNECTION)
+    data += struct.pack('!H', Subtype.DISCONNECTION.confirm)
+    return data
 
 
 def snake_new(id_, name, mass, head, tail):
-    data = struct.pack('!HH', Type.SNAKE, Subtype.SNAKE.new)
+    data = struct.pack('!H', Type.SNAKE)
+    data += struct.pack('!H', Subtype.SNAKE.new)
     data += id_
     data += struct.pack('!b', len(name))
     data += name
@@ -151,49 +184,69 @@ def snake_new(id_, name, mass, head, tail):
 
 
 def snake_full_update(id_, mass, head, tail):
-    data = struct.pack('!HH', Type.SNAKE, Subtype.SNAKE.full_update)
+    data = struct.pack('!H', Type.SNAKE)
+    data += struct.pack('!H', Subtype.SNAKE.full_update)
     data += id_
     data += struct.pack('!l', mass)
     x, y = head
-    data += struct.pack('!ff', x, y)
+    data += struct.pack('!f', x)
+    data += struct.pack('!f', y)
     for x, y in tail:
-        data += struct.pack('!ff', x, y)
+        data += struct.pack('!f', x)
+        data += struct.pack('!f', y)
     return data
 
 
 def snake_delete(id_):
-    data = struct.pack('!HH', Type.SNAKE, Subtype.SNAKE.delete)
+    data = struct.pack('!H', Type.SNAKE)
+    data += struct.pack('!H', Subtype.SNAKE.delete)
     data += id_
     return data
 
 
 def snake_change_angle(angle):
-    data = struct.pack('!HHf', Type.SNAKE, Subtype.SNAKE.change_angle, angle)
+    data = struct.pack('!H', Type.SNAKE)
+    data += struct.pack('!H', Subtype.SNAKE.change_angle)
+    data += struct.pack('!f', angle)
     return data
 
 
 def orb_new(id_, value, x, y):
-    data = struct.pack('!HH', Type.ORB, Subtype.ORB.new)
+    data = struct.pack('!H', Type.ORB)
+    data += struct.pack('!H', Subtype.ORB.new)
     data += id_
-    data += struct.pack('!bff', value, x, y)
+    data += struct.pack('!b', value)
+    data += struct.pack('!f', x)
+    data += struct.pack('!f', y)
     return data
 
 
 def orb_delete(id_):
-    data = struct.pack('!HHff', Type.ORB, Subtype.ORB.delete)
+    data = struct.pack('!H', Type.ORB)
+    data += struct.pack('!H', Subtype.ORB.delete)
     data += id_
     return data
 
 
 def initial_server(width, height, id_):
-    data = struct.pack('!HHHH', Type.INITIAL, Subtype.INITIAL.server, width, height)
+    data = struct.pack('!H', Type.INITIAL)
+    data += struct.pack('!H', Subtype.INITIAL.server)
+    data += struct.pack('!H', width)
+    data += struct.pack('!H', height)
     data += id_
     return data
 
 
 def initial_client(name):
-    data = struct.pack('!HH', Type.INITIAL, Subtype.INITIAL.client)
+    data = struct.pack('!H', Type.INITIAL)
+    data += struct.pack('!H', Subtype.INITIAL.client)
     data += name
+    return data
+
+
+def control_stream_end():
+    data = struct.pack('!H', Type.CONTROL)
+    data += struct.pack('!H', Subtype.CONTROL.stream_end)
     return data
 
 
@@ -273,41 +326,62 @@ def __disconnection_confirm_parser(data):
 
 def __snake_new_parser(data):
     kwargs = {}
+
+    # print '\n\nbefore key', hex_con(data), '\n'
     kwargs['id'] = data[:KEY_SIZE]
     data = data[KEY_SIZE:]
-    name_len = struct.unpack('!b', data[0:1])
+    # print '\n\nafter key', len(data), hex_con(data), '\n'
+
+    name_len = struct.unpack('!b', data[:1])[0]
     data = data[1:]
+    # print name_len
+    # print '\n\nafter name len', len(data), hex_con(data), '\n'
+
     kwargs['name'] = data[:name_len]
-    data = data[:name_len]
-    kwargs['mass'] = struct.unpack('!l', data[:4])
+    data = data[name_len:]
+    # print '\n\nafter name', len(data), hex_con(data), '\n'
+
+    kwargs['mass'] = struct.unpack('!l', data[:4])[0]
     data = data[4:]
-    x, y = struct.unpack('!ff', data[:8])
+    # print '\n\nafter mass', len(data), hex_con(data), '\n'
+
+    x = struct.unpack('!f', data[:4])[0]
+    y = struct.unpack('!f', data[4:8])[0]
     kwargs['head'] = (x, y)
-    data = data[:8]
+    data = data[8:]
+
     tail = []
     while data:
-        x, y = struct.unpack('!ff', data[:8])
+        x = struct.unpack('!f', data[:4])[0]
+        y = struct.unpack('!f', data[4:8])[0]
         tail.append((x, y))
-        data = data[:8]
+        data = data[8:]
     kwargs['tail'] = tail
+
     return kwargs
 
 
 def __snake_full_update_parser(data):
     kwargs = {}
+
     kwargs['id'] = data[:KEY_SIZE]
     data = data[KEY_SIZE:]
-    kwargs['mass'] = struct.unpack('!l', data[:4])
+
+    kwargs['mass'] = struct.unpack('!l', data[:4])[0]
     data = data[4:]
-    x, y = struct.unpack('!ff', data[:8])
+    x = struct.unpack('!f', data[:4])[0]
+    y = struct.unpack('!f', data[4:8])[0]
     kwargs['head'] = (x, y)
-    data = data[:8]
+    data = data[8:]
+
     tail = []
     while data:
-        x, y = struct.unpack('!ff', data[:8])
+        x = struct.unpack('!f', data[:4])[0]
+        y = struct.unpack('!f', data[4:8])[0]
         tail.append((x, y))
-        data = data[:8]
+        data = data[8:]
     kwargs['tail'] = tail
+
     return kwargs
 
 
@@ -352,6 +426,11 @@ def __initial_client_parser(data):
     return kwargs
 
 
+def __control_stream_end(data):
+    kwargs = {}
+    return kwargs
+
+
 DISPATCHER = {
     (Type.ERROR, Subtype.ERROR.name_error): __error_parser,
     (Type.ERROR, Subtype.ERROR.full_server): __error_parser,
@@ -371,8 +450,9 @@ DISPATCHER = {
     (Type.SNAKE, Subtype.SNAKE.change_angle): __snake_change_angle_parser,
     (Type.ORB, Subtype.ORB.new): __orb_new_parser,
     (Type.ORB, Subtype.ORB.delete): __orb_delete_parser,
-    (Type.INITIAL, Subtype.INITIAL.server):__initial_server_parser,
-    (Type.INITIAL, Subtype.INITIAL.client):__initial_client_parser,
+    (Type.INITIAL, Subtype.INITIAL.server): __initial_server_parser,
+    (Type.INITIAL, Subtype.INITIAL.client): __initial_client_parser,
+    (Type.CONTROL, Subtype.CONTROL.stream_end): __control_stream_end,
 }
 
 
@@ -381,10 +461,16 @@ def parse(data):
     kwargs['type'] = struct.unpack('!H', data[0:2])[0]
     kwargs['subtype'] = struct.unpack('!H', data[2:4])[0]
 
-    special_kwargs = DISPATCHER[kwargs['type'], kwargs['subtype']](data[4:])
-    kwargs.update(special_kwargs)
+    try:
+        special_kwargs = DISPATCHER[kwargs['type'], kwargs['subtype']](data[4:])
+        kwargs.update(special_kwargs)
+        return kwargs
 
-    return kwargs
+    except Exception as e:
+        print(hex_con(data))
+        print kwargs
+        print str(e)
+        raise Exception()
 
 
 """
@@ -404,11 +490,15 @@ def add_length(data):
     return length + data
 
 
-KEY_SIZE = 256
+KEY_SIZE = 32
 
 
 def key(obj):
     return sha256(str(id(obj))).digest()
+
+
+def hex_con(data):
+    return ''.join([r'\x{:x}'.format(ord(c)) for c in data])
 
 
 """
@@ -421,7 +511,7 @@ this functions use a length before the message for safe transfer
 
 def send_data(sock, data):
     sock.send(add_length(data))
-    print 'send >', repr(add_length(data))
+    print 'send >', hex_con(data)
 
 
 LENGTH_HEADER_SIZE = 2
@@ -430,7 +520,6 @@ LENGTH_HEADER_SIZE = 2
 def recv_data(sock):
     length_str = ''
     length = 0
-    sock.settimeout(None)
     while len(length_str) < LENGTH_HEADER_SIZE:
         length_str += sock.recv(LENGTH_HEADER_SIZE - len(length_str))
         if length_str == '':
@@ -439,7 +528,6 @@ def recv_data(sock):
     data = ''
     if length_str != '':
         length = struct.unpack('!H', length_str)[0]
-
         while len(data) < length:
             data += sock.recv(length - len(data))
             if data == '':
@@ -448,5 +536,5 @@ def recv_data(sock):
     if length != len(data):
         data = ''
 
-    print 'recv >', repr(data)
+    print 'recv >', length, hex_con(data)
     return data

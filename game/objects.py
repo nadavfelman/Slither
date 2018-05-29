@@ -262,9 +262,10 @@ class snake(object):
         s.update_mass()
         for i, pos in enumerate(tail):
             s.tail[i].location = pos
+        return s
 
-    def update_snake(self, loc, mass, tail):
-        self.head.location = loc
+    def update_snake(self, mass, head, tail):
+        self.head.location = head
         self.mass = mass
         self.update_mass()
         for i, pos in enumerate(tail):
