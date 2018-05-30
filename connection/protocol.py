@@ -12,7 +12,7 @@ This has variables that are important to the comunication
 
 """
 
-PORT = 52378
+PORT = 52379
 
 """
 Enums

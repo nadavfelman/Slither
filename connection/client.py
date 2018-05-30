@@ -79,7 +79,11 @@ class client(object):
         surface.fill((0, 0, 0))
 
         for snake in self.snakes.itervalues():
+            print snake.head.location
             snake.render(surface)
 
         for orb in self.orbs.itervalues():
             orb.render(surface)
+
+    def close(self):
+        self.sock.close()

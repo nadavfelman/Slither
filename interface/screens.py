@@ -6,6 +6,7 @@ import connection
 import re
 import subprocess
 import time
+import pygame
 
 
 class control_screen(elements.screen):
@@ -38,7 +39,8 @@ class control_screen(elements.screen):
             self.set_actives(self.game)
 
         def singleplayer_join():
-            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'], shell=True, stdin=None, stdout=None,
+            subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'],
+                             shell=True, stdin=None, stdout=None,
                              stderr=None, close_fds=True)
             time.sleep(1)
             # os.system(r"start /wait cmd /c python .\connection\server.py")
@@ -85,42 +87,64 @@ class primary_screen(elements.screen):
             self.set_actives(self.multiplayer_win)
 
         # create the elements
-        self.background = elements.Image(
-            0, 0, assets.primary_bg, scale=w / 1920.0)
+        self.background = elements.Image(0, 0, assets.primary_bg,
+                                         scale=w / 1920.0)
 
-        self.button_singleplayer = elements.Button(0.044270 * w, 0.553703 * h, 0.271354 * w, 0.070370 * h,
+        self.button_singleplayer = elements.Button(0.044270 * w,
+                                                   0.553703 * h, 0.271354 * w, 0.070370 * h,
                                                    'singleplayer',
-                                                   text_color=colors.GRAY235, regular=colors.GRAY92, hover=colors.BLUE,
-                                                   click=colors.BLUE_BASIC, font_name=assets.primary_font,
-                                                   font_size=0.044444 * h, fnc=show_singleplayer_win)
+                                                   text_color=colors.GRAY235,
+                                                   regular=colors.GRAY92,
+                                                   hover=colors.BLUE,
+                                                   click=colors.BLUE_BASIC,
+                                                   font_name=assets.primary_font,
+                                                   font_size=0.044444 * h,
+                                                   fnc=show_singleplayer_win)
 
-        self.button_multiplayer = elements.Button(0.044270 * w, 0.642592 * h, 0.271354 * w, 0.070370 * h, 'multiplayer',
-                                                  text_color=colors.GRAY235, regular=colors.GRAY92, hover=colors.BLUE,
-                                                  click=colors.BLUE_BASIC, font_name=assets.primary_font,
-                                                  font_size=0.044444 * h, fnc=show_multiplayer_win)
+        self.button_multiplayer = elements.Button(0.044270 * w, 0.642592 * h,
+                                                  0.271354 * w, 0.070370 * h, 'multiplayer',
+                                                  text_color=colors.GRAY235,
+                                                  regular=colors.GRAY92,
+                                                  hover=colors.BLUE,
+                                                  click=colors.BLUE_BASIC,
+                                                  font_name=assets.primary_font,
+                                                  font_size=0.044444 * h,
+                                                  fnc=show_multiplayer_win)
 
-        self.button_exit = elements.Button(0.044270 * w, 0.731481 * h, 0.271354 * w, 0.070370 * h, 'exit',
-                                           text_color=colors.GRAY235, regular=colors.RED68, hover=colors.RED54,
-                                           click=colors.RED38, fnc=stop_running, font_name=assets.primary_font,
+        self.button_exit = elements.Button(0.044270 * w, 0.731481 * h,
+                                           0.271354 * w, 0.070370 * h, 'exit',
+                                           text_color=colors.GRAY235,
+                                           regular=colors.RED68,
+                                           hover=colors.RED54,
+                                           click=colors.RED38,
+                                           fnc=stop_running,
+                                           font_name=assets.primary_font,
                                            font_size=0.044444 * h)
 
-        self.inputbox = elements.InputBox(0.034375 * w, 0.372222 * h, 0.291145 * w, 0.075 * h, 'nickname',
-                                          base_color=colors.GRAY235, active_color=colors.BLUE,
-                                          inactive_color=colors.GRAY92, active_tcolor=colors.FLAT_BLUE,
-                                          inactive_tcolor=colors.GRAY215, font_name=assets.primary_font,
-                                          font_size=0.044444 * h, border_size=0.001852 * h)
+        self.inputbox = elements.InputBox(0.034375 * w, 0.372222 * h,
+                                          0.291145 * w, 0.075 * h, 'nickname',
+                                          base_color=colors.GRAY235,
+                                          active_color=colors.BLUE,
+                                          inactive_color=colors.GRAY92,
+                                          active_tcolor=colors.FLAT_BLUE,
+                                          inactive_tcolor=colors.GRAY215,
+                                          font_name=assets.primary_font,
+                                          font_size=0.044444 * h,
+                                          border_size=0.001852 * h)
 
-        self.buttons_container = elements.Container(0.034375 * w, 0.469444 * h, 0.291145 * w, 0.350925 * h,
-                                                    color=colors.GRAY235, border_color=colors.GRAY92,
+        self.buttons_container = elements.Container(0.034375 * w, 0.469444 * h,
+                                                    0.291145 * w, 0.350925 * h,
+                                                    color=colors.GRAY235,
+                                                    border_color=colors.GRAY92,
                                                     border_size=0.001852 * h)
 
-        self.game_text = elements.Text(0.103125 * w, 0.473148 * h, 'Join a Game', assets.primary_font_bold,
-                                       0.050925 * h,
-                                       colors.GRAY92)
+        self.game_text = elements.Text(0.103125 * w, 0.473148 * h,
+                                       'Join a Game', assets.primary_font_bold,
+                                       0.050925 * h, colors.GRAY92)
 
-        self.name_text = elements.Text(0.034375 * w, 0.078703 * h, 'Slither.all', assets.Font_Segoe_Script,
-                                       0.185185 * h,
-                                       colors.GRAY235)
+        self.name_text = elements.Text(0.034375 * w, 0.078703 * h,
+                                       'Slither.all', assets.Font_Segoe_Script,
+                                       0.185185 * h, colors.GRAY235)
 
         # set rerendering
         self.button_singleplayer.need_rerender = True
@@ -167,25 +191,37 @@ class singleplayer_window(elements.screen):
 
     def __init__(self, w, h):
         # create the elements
-        self.container = elements.Container(0.338541 * w, 0.372222 * h, 0.625 * w, 0.447222 * h,
-                                            color=colors.GRAY235, border_color=colors.GRAY92, border_size=0.001852 * h)
+        self.container = elements.Container(0.338541 * w, 0.372222 * h,
+                                            0.625 * w, 0.447222 * h,
+                                            color=colors.GRAY235,
+                                            border_color=colors.GRAY92,
+                                            border_size=0.001852 * h)
 
-        self.title = elements.Text(0.348958 * w, 0.384259 * h, 'Singleplayer', assets.Font_Segoe_UI_Semilight,
-                                   0.050925 * h,
-                                   colors.GRAY66)
+        self.title = elements.Text(0.348958 * w, 0.384259 * h, 'Singleplayer',
+                                   assets.Font_Segoe_UI_Semilight,
+                                   0.050925 * h, colors.GRAY66)
 
-        text = 'This will start a singleplayer type game.\nIn this mode the player does not face another ' \
-               'human\nplayers. In this mode NO INTERNET CONNECTION IS\nNEEDED. '
-        self.text = elements.Text(0.348958 * w, 0.472222 * h, text, assets.Font_Segoe_UI_Light, 0.046296 * h,
+        text = 'This will start a singleplayer type game.\nIn this mode ' \
+               'the player does not face another human\nplayers. In this ' \
+               'mode NO INTERNET CONNECTION IS\nNEEDED. '
+        self.text = elements.Text(0.348958 * w, 0.472222 * h, text,
+                                  assets.Font_Segoe_UI_Light, 0.046296 * h,
                                   colors.GRAY92)
 
-        self.start_button = elements.Button(0.348958 * w, 0.731481 * h, 0.270833 * w, 0.070370 * h, text='start',
-                                            text_color=colors.GRAY92, regular=colors.GREEN_FL, hover=colors.GREEN_FLST,
-                                            click=colors.GREEN_FLSTDE, font_name=assets.Font_Segoe_UI_Light,
+        self.start_button = elements.Button(0.348958 * w, 0.731481 * h,
+                                            0.270833 * w, 0.070370 * h,
+                                            text='start',
+                                            text_color=colors.GRAY92,
+                                            regular=colors.GREEN_FL,
+                                            hover=colors.GREEN_FLST,
+                                            click=colors.GREEN_FLSTDE,
+                                            font_name=assets.Font_Segoe_UI_Light,
                                             font_size=0.050926 * h)
 
-        self.line = elements.Line(0.348958 * w, 0.46 * h, 0.947917 * w,
-                                  0.46 * h, width=0.001852 * h, color=colors.GRAY173)
+        self.line = elements.Line(0.348958 * w, 0.46 * h,
+                                  0.947917 * w, 0.46 * h,
+                                  width=0.001852 * h,
+                                  color=colors.GRAY173)
 
         # set rerendering
         self.start_button.need_rerender = True
@@ -212,25 +248,37 @@ class multiplayer_window(elements.screen):
 
     def __init__(self, w, h):
         # create the elements
-        self.container = elements.Container(0.338541 * w, 0.372222 * h, 0.625 * w, 0.447222 * h,
-                                            color=colors.GRAY235, border_color=colors.GRAY92, border_size=0.001852 * h)
+        self.container = elements.Container(0.338541 * w, 0.372222 * h,
+                                            0.625 * w, 0.447222 * h,
+                                            color=colors.GRAY235,
+                                            border_color=colors.GRAY92,
+                                            border_size=0.001852 * h)
 
-        self.title = elements.Text(0.348958 * w, 0.384259 * h, 'Multiplayer', assets.Font_Segoe_UI_Semilight,
-                                   0.050925 * h,
+        self.title = elements.Text(0.348958 * w, 0.384259 * h, 'Multiplayer',
+                                   assets.Font_Segoe_UI_Semilight, 0.050925 * h,
                                    colors.GRAY66)
 
-        text = 'This will start a multiplaer type game.\nIn this mode the player faces another human\nplayers. In ' \
-               'this mode INTERNET CONNECTION IS\nNEEDED to play in this mode. '
-        self.text = elements.Text(0.348958 * w, 0.472222 * h, text, assets.Font_Segoe_UI_Light, 0.046296 * h,
+        text = 'This will start a multiplaer type game.\nIn this mode the ' \
+               'player faces another human\nplayers. In this mode ' \
+               'INTERNET CONNECTION IS\nNEEDED to play in this mode. '
+        self.text = elements.Text(0.348958 * w, 0.472222 * h, text,
+                                  assets.Font_Segoe_UI_Light, 0.046296 * h,
                                   colors.GRAY92)
 
-        self.start_button = elements.Button(0.348958 * w, 0.731481 * h, 0.270833 * w, 0.070370 * h, text='start',
-                                            text_color=colors.GRAY92, regular=colors.GREEN_FL, hover=colors.GREEN_FLST,
-                                            click=colors.GREEN_FLSTDE, font_name=assets.Font_Segoe_UI_Light,
+        self.start_button = elements.Button(0.348958 * w, 0.731481 * h,
+                                            0.270833 * w, 0.070370 * h,
+                                            text='start',
+                                            text_color=colors.GRAY92,
+                                            regular=colors.GREEN_FL,
+                                            hover=colors.GREEN_FLST,
+                                            click=colors.GREEN_FLSTDE,
+                                            font_name=assets.Font_Segoe_UI_Light,
                                             font_size=0.050926 * h)
 
         self.line = elements.Line(0.348958 * w, 0.46 * h, 0.947917 * w,
-                                  0.46 * h, width=0.001852 * h, color=colors.GRAY173)
+                                  0.46 * h,
+                                  width=0.001852 * h,
+                                  color=colors.GRAY173)
 
         # set rerendering
         self.start_button.need_rerender = True
@@ -257,38 +305,61 @@ class multiplayer_join_win(elements.screen):
 
     def __init__(self, w, h):
         # create the elements
-        self.background = elements.Image(
-            0, 0, assets.primary_bg, scale=w / 1920.0)
+        self.background = elements.Image(0, 0, assets.primary_bg,
+                                         scale=w / 1920.0)
 
-        self.container = elements.Container(0.187500 * w, 0.296296 * h, 0.625000 * w, 0.462963 * h,
-                                            color=colors.GRAY235, border_color=colors.GRAY92, border_size=0.001852 * h)
+        self.container = elements.Container(0.187500 * w, 0.296296 * h,
+                                            0.625000 * w, 0.462963 * h,
+                                            color=colors.GRAY235,
+                                            border_color=colors.GRAY92,
+                                            border_size=0.001852 * h)
 
-        self.title = elements.Text(0.200000 * w, 0.305556 * h, 'Multiplayer Connection', assets.Font_Segoe_UI_Semilight,
-                                   0.050925 * h,
-                                   colors.GRAY66)
+        self.title = elements.Text(0.200000 * w, 0.305556 * h,
+                                   'Multiplayer Connection',
+                                   assets.Font_Segoe_UI_Semilight,
+                                   0.050925 * h, colors.GRAY66)
 
-        text = 'Please enter the server`s IP in the input box below.\nMake sure the server is in your LAN or can be accessed\nfrom the internet.'
-        self.text = elements.Text(0.200000 * w, 0.376852 * h, text, assets.Font_Segoe_UI_Light, 0.046296 * h,
+        text = 'Please enter the server`s IP in the input box below.\n' \
+               'Make sure the server is in your LAN or can be accessed\n' \
+               'from the internet.'
+        self.text = elements.Text(0.200000 * w, 0.376852 * h, text,
+                                  assets.Font_Segoe_UI_Light, 0.046296 * h,
                                   colors.GRAY92)
 
-        self.join_button = elements.Button(0.200000 * w, 0.663889 * h, 0.476042 * w, 0.070370 * h, text='join',
-                                           text_color=colors.GRAY92, regular=colors.GREEN_FL, hover=colors.GREEN_FLST,
-                                           click=colors.GREEN_FLSTDE, font_name=assets.Font_Segoe_UI_Light,
+        self.join_button = elements.Button(0.200000 * w, 0.663889 * h,
+                                           0.476042 * w, 0.070370 * h,
+                                           text='join',
+                                           text_color=colors.GRAY92,
+                                           regular=colors.GREEN_FL,
+                                           hover=colors.GREEN_FLST,
+                                           click=colors.GREEN_FLSTDE,
+                                           font_name=assets.Font_Segoe_UI_Light,
                                            font_size=0.050926 * h)
 
-        self.cancel_button = elements.Button(0.684375 * w, 0.663889 * h, 0.107292 * w, 0.070370 * h, 'cancel',
-                                             text_color=colors.GRAY235, regular=colors.RED68, hover=colors.RED54,
-                                             click=colors.RED38, font_name=assets.primary_font,
+        self.cancel_button = elements.Button(0.684375 * w, 0.663889 * h,
+                                             0.107292 * w, 0.070370 * h, 'cancel',
+                                             text_color=colors.GRAY235,
+                                             regular=colors.RED68,
+                                             hover=colors.RED54,
+                                             click=colors.RED38,
+                                             font_name=assets.primary_font,
                                              font_size=0.044444 * h)
 
         self.line = elements.Line(0.200000 * w, 0.379630 * h, 0.770833 * w,
-                                  0.379630 * h, width=0.001852 * h, color=colors.GRAY173)
+                                  0.379630 * h,
+                                  width=0.001852 * h,
+                                  color=colors.GRAY173)
 
-        self.inputbox = elements.InputBox(0.200000 * w, 0.571296 * h, 0.592708 * w, 0.070370 * h, 'server`s ip',
-                                          base_color=colors.GRAY235, active_color=colors.BLUE,
-                                          inactive_color=colors.GRAY92, active_tcolor=colors.FLAT_BLUE,
-                                          inactive_tcolor=colors.GRAY215, font_name=assets.primary_font,
-                                          font_size=0.044444 * h, border_size=0.001852 * h)
+        self.inputbox = elements.InputBox(0.200000 * w, 0.571296 * h,
+                                          0.592708 * w, 0.070370 * h, 'server`s ip',
+                                          base_color=colors.GRAY235,
+                                          active_color=colors.BLUE,
+                                          inactive_color=colors.GRAY92,
+                                          active_tcolor=colors.FLAT_BLUE,
+                                          inactive_tcolor=colors.GRAY215,
+                                          font_name=assets.primary_font,
+                                          font_size=0.044444 * h,
+                                          border_size=0.001852 * h)
 
         # set rerendering
         self.join_button.need_rerender = True
@@ -314,6 +385,14 @@ class multiplayer_join_win(elements.screen):
         self.elements_objs.append(self.join_button)
         self.elements_objs.append(self.cancel_button)
 
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                self.join_button.fnc()
+            elif event.key == pygame.K_ESCAPE:
+                self.cancel_button.fnc()
+        super(multiplayer_join_win, self).handle_event(event)
+
 
 class game_window(elements.screen):
     """[summary]
@@ -332,6 +411,9 @@ class game_window(elements.screen):
         self.client.need_update = True
 
         # set event handling
+
+        # set closing
+        self.client.need_closing = True
 
         # initialize variables
         super(game_window, self).__init__()

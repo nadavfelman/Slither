@@ -165,7 +165,7 @@ class InputBox(object):
                 else:
                     if len(self.text) < self.limit:
                         if event.unicode in printable:
-                            blocked = '\t'
+                            blocked = '\t\n\r'
                             if event.unicode not in blocked:
                                 self.text += event.unicode
                 # Re-render the text.
@@ -348,3 +348,11 @@ class screen(object):
                 window.next_render_full = True
             else:
                 window.active = False
+
+    def close(self):
+        for element in self.elements_objs:
+            if getattr(element, 'need_closing', None):
+                element.close()
+
+        for window in self.windows_objs:
+            window.close()

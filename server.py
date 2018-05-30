@@ -40,7 +40,7 @@ class client_connection(threading.Thread):
             client_addr {[type]} -- [description]
         """
 
-        super(client_connection, self).__init__(name='CCThread-{}'.format(client_addr[0]))
+        super(client_connection, self).__init__()
         self.client_addr = client_addr
         self.client_socket = client_socket
         self.key = protocol.key(self.client_socket)
@@ -69,38 +69,44 @@ class client_connection(threading.Thread):
             except Exception:
                 pass
 
+        snake = game.objects.playerSnake((100, 100), name)
         with dataLock:
             print 'new s'
-            game_data.snakes[self.key] = game.objects.playerSnake((100, 100), name)
+            game_data.add_snake(self.key, snake)
         with clientsLock:
-            snake = game_data.snakes[self.key]
-            head = snake.head.location
-            tail = [t.location for t in snake.tail]
-            data = protocol.snake_new(self.key, snake.name, snake.mass, head, tail)
-            send_all(data)
+            # head = snake.head.location
+            # tail = [t.location for t in snake.tail]
+            # data = protocol.snake_new(self.key, snake.name, snake.mass, head, tail)
+            # send_all(data)
             clients[self.key].extend(game_data.get_new())
 
         while True:
-            messages = []
-            with clientsLock:
-                if self.key not in clients:
-                    break
-                if clients[self.key]:
-                    messages = clients[self.key]
-                    clients[self.key] = []
-            for message in messages:
-                protocol.send_data(self.client_socket, message)
-
             try:
-                data = protocol.parse(protocol.recv_data(self.client_socket))
-                with dataLock:
-                    if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.change_angle:
-                        game_data.snakes[self.key].set_angle(data['angle'])
-            except Exception:
-                pass
+                messages = []
+                with clientsLock:
+                    if self.key not in clients:
+                        break
+                    if clients[self.key]:
+                        messages = clients[self.key]
+                        clients[self.key] = []
+                for message in messages:
+                    protocol.send_data(self.client_socket, message)
+
+                try:
+                    data = protocol.parse(protocol.recv_data(self.client_socket))
+                    with dataLock:
+                        if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.change_angle:
+                            game_data.snakes[self.key].set_angle(data['angle'])
+                except Exception:
+                    pass
+            except socket.error as e:
+                break
 
         with clientsLock:
             del clients[self.key]
+        with dataLock:
+            game_data.del_snake(self.key)
+        self.client_socket.close()
 
 
 def main():
