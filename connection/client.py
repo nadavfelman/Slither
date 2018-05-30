@@ -53,7 +53,7 @@ class client(object):
             except socket.timeout:
                 break
             data = protocol.parse(data)
-            print data
+            # print data
             if data['type'] == protocol.Type.CONTROL and data['subtype'] == protocol.Subtype.CONTROL.stream_end:
                 break
 
@@ -62,6 +62,8 @@ class client(object):
                 snake = game.objects.snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
                 self.snakes[data['id']] = snake
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.full_update:
+                if not data['id'] in self.snakes:
+                    continue
                 # print 'mass', self.snakes[data['id']].mass, type(self.snakes[data['id']].mass)
                 self.snakes[data['id']].update_snake(data['mass'], data['head'], data['tail'])
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.delete:

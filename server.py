@@ -11,6 +11,21 @@ dataLock = threading.Lock()
 clock = pygame.time.Clock()
 
 
+def send_all(data):
+    if hasattr(data, '__iter__'):
+        print 'iterable'
+        with dataLock:
+            for client in clients.iterkeys():
+                print 'sent'
+                clients[client].expend(data)
+    else:
+        print 'string'
+        with dataLock:
+            for client in clients.iterkeys():
+                print 'sent'
+                clients[client].append(data)
+
+
 class client_connection(threading.Thread):
     """
     [summary]
@@ -55,12 +70,15 @@ class client_connection(threading.Thread):
                 pass
 
         with dataLock:
+            print 'new s'
             game_data.snakes[self.key] = game.objects.playerSnake((100, 100), name)
         with clientsLock:
             snake = game_data.snakes[self.key]
             head = snake.head.location
             tail = [t.location for t in snake.tail]
-            clients[self.key].append(protocol.snake_new(self.key, snake.name, snake.mass, head, tail))
+            data = protocol.snake_new(self.key, snake.name, snake.mass, head, tail)
+            send_all(data)
+            clients[self.key].extend(game_data.get_new())
 
         while True:
             messages = []
