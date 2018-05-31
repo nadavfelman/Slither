@@ -73,7 +73,7 @@ def main():
     # data setup
     CLOCK = pygame.time.Clock()
     board = pygame.Rect(0, 0, 200, 200)
-    dataBase = dataSets.dataBase()
+    dataBase = dataSets.DataBase()
     rendering = render.render(display.get_rect(), board, dataBase)
 
     # test s

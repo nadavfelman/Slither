@@ -1,7 +1,8 @@
 import objects
 import connection.protocol as protocol
 
-class dataBase(object):
+
+class DataBase(object):
     """
     [summary]
 
@@ -13,10 +14,12 @@ class dataBase(object):
         """
         self.snakes = {}
         self.orbs = {}
+
+        self.width = 3000
+        self.height = 3000
+
         self.last_update = []
         self.control = []
-        self.width = 200
-        self.height = 200
 
     def update(self):
         self.last_update = []
@@ -49,27 +52,3 @@ class dataBase(object):
             data = protocol.snake_new(id_, obj.name, obj.mass, obj.head.location, [t.location for t in obj.tail])
             update.append(data)
         return update
-
-    #  def move_snakes(self):
-    #     for id_, snake in self.snakes.iteritems():
-    #         snake.move()
-    #         data = protocol.snake_full_update(id_, obj.mass, obj.head.location, [t.location for t in obj.tail])
-    #         self.last_update.append((id_, snake))
-
-    # def get_update(self):
-    #     update = []
-    #     # print 'data update'
-    #     for id_, obj in self.last_update:
-    #         data = protocol.snake_full_update(id_, obj.mass,obj.head.location, [t.location for t in obj.tail])
-    #         # print 'up', ''.join([r'\x{:x}'.format(ord(c)) for c in data])
-    #         update.append(data)
-    #     return update
-    #
-    # def get_new(self):
-    #     update = []
-    #     # print 'data update'
-    #     for id_, obj in self.last_update:
-    #         data = protocol.snake_new(id_, obj.name, obj.mass, obj.head.location, [t.location for t in obj.tail])
-    #         # print 'up', ''.join([r'\x{:x}'.format(ord(c)) for c in data])
-    #         update.append(data)
-    #     return update

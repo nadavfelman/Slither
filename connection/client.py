@@ -2,8 +2,8 @@ import game
 import protocol
 import pygame
 import socket
-import threading
 from math import atan2
+import interface.colors as colors
 
 
 class client(object):
@@ -76,11 +76,23 @@ class client(object):
 
     def render(self, surface):
         print 'render'
-        surface.fill((0, 0, 0))
+        surface.fill(colors.WARM_WHITE)
+
+        zoom = 1
+        xoff = 0
+        yoff = 0
+
+        if self.id_ in self.snakes:
+            player = self.snakes[self.id_]
+            zoom = 1080 * .03 / player.get_radius() + 1
+            width, height = 1920 / zoom, 1080 / zoom
+            x, y = player.head.location
+            xoff = (-x + width / 2) * zoom
+            yoff = (-y + height / 2) * zoom
 
         for snake in self.snakes.itervalues():
             print snake.head.location
-            snake.render(surface)
+            snake.render(surface, zoom, xoff, yoff)
 
         for orb in self.orbs.itervalues():
             orb.render(surface)

@@ -25,14 +25,16 @@ class control_screen(elements.screen):
         def multiplayer_join_join_button():
             name = self.main_win.inputbox.text
             ip = self.multiplayer_join.inputbox.text
-            match = re.match(r'(\d{1,3}\.){3}\d{1,3}', ip)
-            if not match:
-                return
 
-            sections = ip.split('.')
-            valid = all([0 <= int(num) <= 255 for num in sections])
-            if not valid:
-                return
+            if ip != 'localhost':
+                match = re.match(r'(\d{1,3}\.){3}\d{1,3}', ip)
+                if not match:
+                    return
+
+                sections = ip.split('.')
+                valid = all([0 <= int(num) <= 255 for num in sections])
+                if not valid:
+                    return
 
             self.game = game_window(w, h, ip, name)
             self.windows_objs.append(self.game)

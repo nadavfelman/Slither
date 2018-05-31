@@ -6,7 +6,7 @@ import pygame
 
 clients = {}
 clientsLock = threading.Lock()
-game_data = game.dataSets.dataBase()
+game_data = game.dataSets.DataBase()
 dataLock = threading.Lock()
 clock = pygame.time.Clock()
 
