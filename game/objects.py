@@ -1,11 +1,9 @@
 import math
-import random
 
 import numpy as np
 import pygame
 
-import colors
-import dataSets
+import interface.colors as colors
 import functions
 import render
 
@@ -380,6 +378,8 @@ class orb(pygame.sprite.Sprite):
         super(orb, self).__init__()
 
         self.mass = mass
+        self.x = x
+        self.y = y
         self.radius = int(round(functions.map_range(
             mass, (orb.MIN_MASS, orb.MAX_MASS), (orb.MIN_RADIUS, orb.MAX_RADIUS))))
 

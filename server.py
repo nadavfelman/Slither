@@ -6,23 +6,19 @@ import pygame
 
 clients = {}
 clientsLock = threading.Lock()
-game_data = game.dataSets.DataBase()
+game_data = game.dataSets.dataBase()
 dataLock = threading.Lock()
 clock = pygame.time.Clock()
 
 
 def send_all(data):
     if hasattr(data, '__iter__'):
-        print 'iterable'
         with dataLock:
             for client in clients.iterkeys():
-                print 'sent'
                 clients[client].expend(data)
     else:
-        print 'string'
         with dataLock:
             for client in clients.iterkeys():
-                print 'sent'
                 clients[client].append(data)
 
 
@@ -70,15 +66,10 @@ class client_connection(threading.Thread):
                 pass
 
         snake = game.objects.playerSnake((100, 100), name)
-        with dataLock:
-            print 'new s'
-            game_data.add_snake(self.key, snake)
         with clientsLock:
-            # head = snake.head.location
-            # tail = [t.location for t in snake.tail]
-            # data = protocol.snake_new(self.key, snake.name, snake.mass, head, tail)
-            # send_all(data)
             clients[self.key].extend(game_data.get_new())
+        with dataLock:
+            game_data.add_snake(self.key, snake)
 
         while True:
             try:
@@ -97,6 +88,8 @@ class client_connection(threading.Thread):
                     with dataLock:
                         if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.change_angle:
                             game_data.snakes[self.key].set_angle(data['angle'])
+                        elif data['type'] == protocol.Type.DISCONNECTION and data['subtype'] == protocol.Subtype.DISCONNECTION.announce:
+                            break
                 except Exception:
                     pass
             except socket.error as e:
@@ -110,22 +103,16 @@ class client_connection(threading.Thread):
 
 
 def main():
-    global game_data
-    global dataLock
-    global clients
-
     server_socket = socket.socket()
     server_socket.bind(('0.0.0.0', protocol.PORT))
     server_socket.listen(10)
     server_socket.settimeout(0.001)
-    print 'started'
 
     while True:
         try:
             client_socket, client_addr = server_socket.accept()
             client_thread = client_connection(client_socket, client_addr)
             client_thread.start()
-            print 'new client'
         except socket.timeout as e:
             pass
 
@@ -138,6 +125,8 @@ def main():
                 clients[client].append(protocol.control_stream_end())
 
         clock.tick(60)
+
+    server_socket.close()
 
 
 if __name__ == '__main__':

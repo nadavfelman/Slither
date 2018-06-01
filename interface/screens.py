@@ -413,6 +413,7 @@ class game_window(elements.screen):
         self.client.need_update = True
 
         # set event handling
+        self.client.need_events = True
 
         # set closing
         self.client.need_closing = True

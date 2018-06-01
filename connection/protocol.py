@@ -211,11 +211,11 @@ def snake_change_angle(angle):
     return data
 
 
-def orb_new(id_, value, x, y):
+def orb_new(id_, mass, x, y):
     data = struct.pack('!H', Type.ORB)
     data += struct.pack('!H', Subtype.ORB.new)
     data += id_
-    data += struct.pack('!b', value)
+    data += struct.pack('!b', mass)
     data += struct.pack('!f', x)
     data += struct.pack('!f', y)
     return data
@@ -327,23 +327,17 @@ def __disconnection_confirm_parser(data):
 def __snake_new_parser(data):
     kwargs = {}
 
-    # print '\n\nbefore key', hex_con(data), '\n'
     kwargs['id'] = data[:KEY_SIZE]
     data = data[KEY_SIZE:]
-    # print '\n\nafter key', len(data), hex_con(data), '\n'
 
     name_len = struct.unpack('!b', data[:1])[0]
     data = data[1:]
-    # print name_len
-    # print '\n\nafter name len', len(data), hex_con(data), '\n'
 
     kwargs['name'] = data[:name_len]
     data = data[name_len:]
-    # print '\n\nafter name', len(data), hex_con(data), '\n'
 
     kwargs['mass'] = struct.unpack('!l', data[:4])[0]
     data = data[4:]
-    # print '\n\nafter mass', len(data), hex_con(data), '\n'
 
     x = struct.unpack('!f', data[:4])[0]
     y = struct.unpack('!f', data[4:8])[0]
@@ -400,7 +394,7 @@ def __snake_change_angle_parser(data):
 def __orb_new_parser(data):
     kwargs = {}
     kwargs['id'] = data[:32]
-    kwargs['value'] = struct.unpack('!b', data[32:33])[0]
+    kwargs['mass'] = struct.unpack('!b', data[32:33])[0]
     kwargs['x'] = struct.unpack('!f', data[33:37])[0]
     kwargs['y'] = struct.unpack('!f', data[37:41])[0]
     return kwargs
@@ -461,16 +455,9 @@ def parse(data):
     kwargs['type'] = struct.unpack('!H', data[0:2])[0]
     kwargs['subtype'] = struct.unpack('!H', data[2:4])[0]
 
-    try:
-        special_kwargs = DISPATCHER[kwargs['type'], kwargs['subtype']](data[4:])
-        kwargs.update(special_kwargs)
-        return kwargs
-
-    except Exception as e:
-        print(hex_con(data))
-        print kwargs
-        print str(e)
-        raise Exception()
+    additional_kwargs = DISPATCHER[kwargs['type'], kwargs['subtype']](data[4:])
+    kwargs.update(additional_kwargs)
+    return kwargs
 
 
 """
@@ -484,7 +471,7 @@ def add_length(data):
 
     if length > 65536:
         raise ValueError(
-            'length of the packet cant be mor than 65536. ({})'.format(length))
+            'length of the packet cant be more than 65536. ({})'.format(length))
 
     length = struct.pack('!H', len(data))
     return length + data
@@ -511,7 +498,7 @@ this functions use a length before the message for safe transfer
 
 def send_data(sock, data):
     sock.send(add_length(data))
-    print 'send >', hex_con(data)
+    # print 'send >', hex_con(data)
 
 
 LENGTH_HEADER_SIZE = 2
@@ -536,5 +523,5 @@ def recv_data(sock):
     if length != len(data):
         data = ''
 
-    print 'recv >', length, hex_con(data)
+    # print 'recv >', length, hex_con(data)
     return data
