@@ -9,7 +9,7 @@ import time
 import pygame
 
 
-class control_screen(elements.screen):
+class ControlScreen(elements.Screen):
     """
     [summary]
     """
@@ -36,7 +36,7 @@ class control_screen(elements.screen):
                 if not valid:
                     return
 
-            self.game = game_window(w, h, ip, name)
+            self.game = GameWindow(w, h, ip, name)
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
@@ -47,13 +47,13 @@ class control_screen(elements.screen):
             time.sleep(1)
             # os.system(r"start /wait cmd /c python .\connection\server.py")
             name = self.main_win.inputbox.text
-            self.game = game_window(w, h, '127.0.0.1', name)
+            self.game = GameWindow(w, h, '127.0.0.1', name)
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
         # create subwindows
-        self.main_win = primary_screen(w, h)
-        self.multiplayer_join = multiplayer_join_win(w, h)
+        self.main_win = PrimaryScreen(w, h)
+        self.multiplayer_join = MultiplayerConnection(w, h)
 
         self.main_win.multiplayer_win.start_button.fnc = multiplayer_win_join_button
         self.multiplayer_join.cancel_button.fnc = multiplayer_join_cancel_button
@@ -61,7 +61,7 @@ class control_screen(elements.screen):
         self.main_win.singleplayer_win.start_button.fnc = singleplayer_join
 
         # initialize variables
-        super(control_screen, self).__init__()
+        super(ControlScreen, self).__init__()
 
         self.windows_objs.append(self.main_win)
         self.windows_objs.append(self.multiplayer_join)
@@ -72,7 +72,7 @@ class control_screen(elements.screen):
         self.set_actives(self.multiplayer_join)
 
 
-class primary_screen(elements.screen):
+class PrimaryScreen(elements.Screen):
     """
     [summary]
     """
@@ -163,11 +163,11 @@ class primary_screen(elements.screen):
         self.inputbox.need_events = True
 
         # create subwindows
-        self.singleplayer_win = singleplayer_window(w, h)
-        self.multiplayer_win = multiplayer_window(w, h)
+        self.singleplayer_win = SingleplayerInfo(w, h)
+        self.multiplayer_win = MultiplayerInfo(w, h)
 
         # initialize variables
-        super(primary_screen, self).__init__()
+        super(PrimaryScreen, self).__init__()
 
         self.elements_objs.append(self.background)
         self.elements_objs.append(self.buttons_container)
@@ -184,7 +184,7 @@ class primary_screen(elements.screen):
         self.set_actives()
 
 
-class singleplayer_window(elements.screen):
+class SingleplayerInfo(elements.Screen):
     """[summary]
 
     Arguments:
@@ -234,7 +234,7 @@ class singleplayer_window(elements.screen):
         self.start_button.need_events = True
 
         # initialize variables
-        super(singleplayer_window, self).__init__()
+        super(SingleplayerInfo, self).__init__()
 
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.line)
@@ -243,7 +243,7 @@ class singleplayer_window(elements.screen):
         self.elements_objs.append(self.start_button)
 
 
-class multiplayer_window(elements.screen):
+class MultiplayerInfo(elements.Screen):
     """
     [summary]
     """
@@ -269,7 +269,7 @@ class multiplayer_window(elements.screen):
 
         self.start_button = elements.Button(0.348958 * w, 0.731481 * h,
                                             0.270833 * w, 0.070370 * h,
-                                            text='start',
+                                            text='connect',
                                             text_color=colors.GRAY92,
                                             regular=colors.GREEN_FL,
                                             hover=colors.GREEN_FLST,
@@ -291,7 +291,7 @@ class multiplayer_window(elements.screen):
         self.start_button.need_events = True
 
         # initialize variables
-        super(multiplayer_window, self).__init__()
+        super(MultiplayerInfo, self).__init__()
 
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.line)
@@ -300,7 +300,7 @@ class multiplayer_window(elements.screen):
         self.elements_objs.append(self.start_button)
 
 
-class multiplayer_join_win(elements.screen):
+class MultiplayerConnection(elements.Screen):
     """
     [summary]
     """
@@ -376,7 +376,7 @@ class multiplayer_join_win(elements.screen):
         self.inputbox.need_events = True
 
         # initialize variables
-        super(multiplayer_join_win, self).__init__()
+        super(MultiplayerConnection, self).__init__()
 
         self.elements_objs.append(self.background)
         self.elements_objs.append(self.container)
@@ -393,10 +393,10 @@ class multiplayer_join_win(elements.screen):
                 self.join_button.fnc()
             elif event.key == pygame.K_ESCAPE:
                 self.cancel_button.fnc()
-        super(multiplayer_join_win, self).handle_event(event)
+        super(MultiplayerConnection, self).handle_event(event)
 
 
-class game_window(elements.screen):
+class GameWindow(elements.Screen):
     """[summary]
     
     Arguments:
@@ -419,6 +419,6 @@ class game_window(elements.screen):
         self.client.need_closing = True
 
         # initialize variables
-        super(game_window, self).__init__()
+        super(GameWindow, self).__init__()
 
         self.elements_objs.append(self.client)

@@ -19,7 +19,7 @@ def main():
     display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), flags)
     display.set_alpha(None)
     CLOCK = pygame.time.Clock()
-    screen_control = interface.screens.control_screen(WINDOW_WIDTH, WINDOW_HEIGHT)
+    screen_control = interface.screens.ControlScreen(WINDOW_WIDTH, WINDOW_HEIGHT)
     screen_control.render(display)
 
     while ctrlVars.running:

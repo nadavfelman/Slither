@@ -6,7 +6,7 @@ import pygame
 
 clients = {}
 clientsLock = threading.Lock()
-game_data = game.dataSets.dataBase()
+game_data = game.dataSets.ServerDataBase()
 dataLock = threading.Lock()
 clock = pygame.time.Clock()
 
@@ -103,17 +103,20 @@ class client_connection(threading.Thread):
 
 
 def main():
+    print 'server started'
     server_socket = socket.socket()
     server_socket.bind(('0.0.0.0', protocol.PORT))
     server_socket.listen(10)
     server_socket.settimeout(0.001)
 
     while True:
+        print 'Cycles Per Second: {}'.format(clock.get_fps())
         try:
             client_socket, client_addr = server_socket.accept()
+            print 'New Client Connected\n\taddress: {}'.format(client_addr)
             client_thread = client_connection(client_socket, client_addr)
             client_thread.start()
-        except socket.timeout as e:
+        except socket.timeout:
             pass
 
         with dataLock:

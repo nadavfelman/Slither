@@ -1,3 +1,5 @@
+from __builtin__ import super
+
 import pygame
 from string import printable
 
@@ -7,7 +9,31 @@ GRAY1 = (170, 170, 170)
 WHITE = (255, 255, 255)
 
 
-class Button(object):
+class BaseElement(object):
+    """
+
+    """
+
+    def __init__(self):
+        self.need_rerender = False
+        self.need_update = False
+        self.need_events = False
+        self.need_closing = False
+
+    def render(self, surface):
+        pass
+
+    def update(self):
+        pass
+
+    def handle_event(self, event):
+        pass
+
+    def close(self):
+        pass
+
+
+class Button(BaseElement):
     """
     [summary]
     """
@@ -20,15 +46,20 @@ class Button(object):
     COLOR_CLICK = GRAY2
     COLOR_SECONDARY = BLACK
 
-    def __init__(self, x, y, w, h, text='', text_color=None, regular=None, hover=None, click=None, border_color=None,
-                 border_size=None, fnc=None, fnc_args=[], font_name=None, font_size=None):
-        self.rect = pygame.Rect(int(round(x)), int(
-            round(y)), int(round(w)), int(round(h)))
+    def __init__(self, x, y, w, h, text='', text_color=None, regular=None,
+                 hover=None, click=None, border_color=None,
+                 border_size=None, fnc=None, font_name=None,
+                 font_size=None):
+
+        super(Button, self).__init__()
+
+        self.rect = pygame.Rect(int(round(x)), int(round(y)),
+                                int(round(w)), int(round(h)))
         self.text = text
         self.text_color = text_color or Button.COLOR_SECONDARY
 
-        self.font = pygame.font.Font(font_name or Button.FONT_NAME, int(
-            round(font_size or Button.FONT_SIZE)))
+        self.font = pygame.font.Font(font_name or Button.FONT_NAME,
+                                     int(round(font_size or Button.FONT_SIZE)))
         self.txt_surface = self.font.render(self.text, True, self.text_color)
 
         self.regular = regular or Button.COLOR_REGULAR
@@ -39,7 +70,6 @@ class Button(object):
         self.border_size = int(round(border_size or 0))
 
         self.fnc = fnc
-        self.fnc_args = fnc_args
 
     def on_button(self):
         return self.rect.collidepoint(pygame.mouse.get_pos())
@@ -49,13 +79,13 @@ class Button(object):
 
     def update(self):
         if self.has_clicked() and callable(self.fnc):
-            self.fnc(*self.fnc_args)
+            self.fnc()
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.rect.collidepoint(event.pos) and callable(self.fnc):
-                    self.fnc(*self.fnc_args)
+                    self.fnc()
 
     def render(self, surface):
         if self.on_button():
@@ -88,7 +118,7 @@ class Button(object):
         surface.blit(self.txt_surface, txt_rect.topleft)
 
 
-class InputBox(object):
+class InputBox(BaseElement):
     """
     [summary]
     """
@@ -102,8 +132,13 @@ class InputBox(object):
     FONT_NAME = None
     BORDER_SIZE = 0
 
-    def __init__(self, x, y, w, h, text='', base_color=None, active_color=None, inactive_color=None, active_tcolor=None,
-                 inactive_tcolor=None, font_name=None, font_size=None, border_size=None):
+    def __init__(self, x, y, w, h, text='', base_color=None,
+                 active_color=None, inactive_color=None,
+                 active_tcolor=None, inactive_tcolor=None,
+                 font_name=None, font_size=None, border_size=None):
+
+        super(InputBox, self).__init__()
+
         self.base_color = base_color or InputBox.COLOR_BASE
         self.active_color = active_color or InputBox.COLOR_ACTIVE
         self.inactive_color = inactive_color or InputBox.COLOR_INACTIVE
@@ -180,7 +215,7 @@ class InputBox(object):
             pygame.draw.rect(screen, self.color, self.rect, self.border_size)
 
 
-class Container(object):
+class Container(BaseElement):
     """
     [summary]
     """
@@ -190,6 +225,8 @@ class Container(object):
     BORDER_SIZE = 0
 
     def __init__(self, x, y, w, h, color=None, border_color=None, border_size=None):
+        super(Container, self).__init__()
+
         self.rect = pygame.Rect(int(round(x)), int(
             round(y)), int(round(w)), int(round(h)))
         self.color = color or Container.COLOR_BASE
@@ -203,7 +240,7 @@ class Container(object):
                              self.rect, self.border_size)
 
 
-class Text(object):
+class Text(BaseElement):
     """
     [summary]
     """
@@ -213,6 +250,8 @@ class Text(object):
     SIZE = 48
 
     def __init__(self, x, y, text, font_name, size, color=None, center=False):
+        super(Text, self).__init__()
+
         self.font = pygame.font.Font(
             font_name or Text.FONT_NAME, int(round(size or Text.SIZE)))
         self.lines = text.split('\n')
@@ -234,12 +273,14 @@ class Text(object):
             surface.blit(textSurface, text_rect)
 
 
-class Image(object):
+class Image(BaseElement):
     """
     [summary]
     """
 
     def __init__(self, x, y, image_path, scale=1):
+        super(Image, self).__init__()
+
         self.x = int(round(x))
         self.y = int(round(y))
         self.image = pygame.image.load(image_path).convert()
@@ -252,7 +293,7 @@ class Image(object):
         surface.blit(self.image, (self.x, self.y))
 
 
-class Line(object):
+class Line(BaseElement):
     """
     [summary]
     """
@@ -261,6 +302,8 @@ class Line(object):
     WIDTH = 1
 
     def __init__(self, x1, y1, x2, y2, width=None, color=None):
+        super(Line, self).__init__()
+
         self.start_pos = (int(round(x1)), int(round(y1)))
         self.end_pos = (int(round(x2)), int(round(y2)))
         self.width = int(round(width or Line.WIDTH))
@@ -271,7 +314,7 @@ class Line(object):
                          self.end_pos, self.width)
 
 
-class screen(object):
+class Screen(object):
     """
     [summary]
     """

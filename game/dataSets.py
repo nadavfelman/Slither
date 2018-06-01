@@ -4,13 +4,13 @@ import pygame
 import random
 
 
-class dataBase(object):
+class ServerDataBase(object):
     """
     [summary]
 
     """
 
-    ORB_LIMIT = 300
+    ORB_LIMIT = 50
 
     def __init__(self):
         """
@@ -68,14 +68,14 @@ class dataBase(object):
                     snake.add_mass(orb.mass)
 
     def snakes_collision(self):
-        for key, snake in self.snakes.iteritems():
+        for key, snake in self.snakes.items():
             for other_key, other_snake in self.snakes.items():
                 if key != other_key:
                     if other_snake.any_collide(snake.head):
                         self.del_snake(key)
 
     def add_orbs(self):
-        while len(self.orbs) < dataBase.ORB_LIMIT:
+        while len(self.orbs) < ServerDataBase.ORB_LIMIT:
             x = random.randint(0, self.width)
             y = random.randint(0, self.height)
             orb = objects.orb(x, y, 100, (152, 12, 58))
