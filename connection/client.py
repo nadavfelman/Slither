@@ -3,7 +3,6 @@ import protocol
 import pygame
 import socket
 from math import atan2
-import interface.colors as colors
 
 
 class client(object):
@@ -17,8 +16,10 @@ class client(object):
         self.sock = socket.socket()
         self.snakes = {}
         self.orbs = {}
+        self.display = pygame.display.get_surface().get_rect()
         self.board = None
         self.id_ = None
+        self.render_control = None
 
         self.sock.connect((ip, protocol.PORT))
 
@@ -29,11 +30,13 @@ class client(object):
                 self.id_ = data['id']
                 break
 
+        self.render_control = game.render.render(self.display, self.board, self.snakes, self.orbs)
+
         protocol.send_data(self.sock, protocol.initial_client(name))
         self.sock.settimeout(0.01)
 
     def handle_event(self, event):
-        pass
+        # pass
         if event.type == pygame.MOUSEMOTION:
             cx, cy = pygame.display.get_surface().get_rect().center
             px, py = event.pos
@@ -43,7 +46,7 @@ class client(object):
             protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update(self):
-        self.update_angle()
+        # self.update_angle()
         self.update_data()
 
     def update_angle(self):
@@ -68,6 +71,8 @@ class client(object):
             if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.new:
                 snake = game.objects.snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
                 self.snakes[data['id']] = snake
+                if self.id_ == data['id']:
+                    self.render_control.player = snake
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.full_update:
                 if not data['id'] in self.snakes:
                     continue
@@ -81,33 +86,7 @@ class client(object):
                 del self.orbs[data['id']]
 
     def render(self, surface):
-        surface.fill(colors.WARM_WHITE)
-
-        zoom = 1
-        xoff = 0
-        yoff = 0
-        x = 0
-        y = 0
-
-        if self.id_ in self.snakes:
-            player = self.snakes[self.id_]
-            # zoom = 1080 * .03 / player.get_radius() + 1
-            width, height = 1920 / zoom, 1080 / zoom
-            x, y = player.head.location
-            xoff = (-x + width / 2) * zoom
-            yoff = (-y + height / 2) * zoom
-
-        for orb in self.orbs.itervalues():
-            lx, ly = orb.x, orb.y
-            dx, dy = x - lx, y - ly
-            if (dx ** 2 + dy ** 2) ** 0.5 < 1920:
-                orb.render(surface, zoom, xoff, yoff)
-
-        for snake in self.snakes.itervalues():
-            lx, ly = snake.head.location
-            dx, dy = x - lx, y - ly
-            if (dx ** 2 + dy ** 2) ** 0.5 < 1920:
-                snake.render(surface, zoom, xoff, yoff)
+        self.render_control.render(surface)
 
     def close(self):
         protocol.send_data(self.sock, protocol.disconnection_announce())

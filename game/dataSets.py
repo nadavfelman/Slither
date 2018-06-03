@@ -20,8 +20,7 @@ class ServerDataBase(object):
         self.orbs = {}
         self.orbs_collision_group = pygame.sprite.Group()
 
-        self.width = 3000
-        self.height = 3000
+        self.board = pygame.Rect(0, 0, 1000, 1000)
 
         self.last_update = []
         self.control = []
@@ -52,6 +51,7 @@ class ServerDataBase(object):
         self.move_snakes()
         self.orbs_collision()
         self.snakes_collision()
+        self.border_collision()
         self.add_orbs()
 
     def move_snakes(self):
@@ -74,10 +74,15 @@ class ServerDataBase(object):
                     if other_snake.any_collide(snake.head):
                         self.del_snake(key)
 
+    def border_collision(self):
+        for key, snake in self.snakes.items():
+            if snake.boarders_collide(self.board):
+                self.del_snake(key)
+
     def add_orbs(self):
         while len(self.orbs) < ServerDataBase.ORB_LIMIT:
-            x = random.randint(0, self.width)
-            y = random.randint(0, self.height)
+            x = random.randint(0, self.board.width)
+            y = random.randint(0, self.board.height)
             orb = objects.orb(x, y, 100, (152, 12, 58))
             id_ = protocol.key(orb)
             self.add_orb(id_, orb)

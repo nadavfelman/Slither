@@ -53,7 +53,7 @@ class client_connection(threading.Thread):
         with clientsLock:
             clients[self.key] = []
 
-        protocol.send_data(self.client_socket, protocol.initial_server(game_data.width, game_data.height, self.key))
+        protocol.send_data(self.client_socket, protocol.initial_server(game_data.board.width, game_data.board.height, self.key))
 
         while True:
             try:

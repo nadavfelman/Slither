@@ -1,3 +1,5 @@
 .vscode
 .idea
 *.pyc
+cloc-1.76
+*.exe

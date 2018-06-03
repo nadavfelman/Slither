@@ -3,8 +3,8 @@ import math
 import numpy as np
 import pygame
 
-import interface.colors as colors
 import functions
+import interface.colors as colors
 import render
 
 
