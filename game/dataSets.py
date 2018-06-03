@@ -18,7 +18,6 @@ class ServerDataBase(object):
         """
         self.snakes = {}
         self.orbs = {}
-        self.orbs_collision_group = pygame.sprite.Group()
 
         self.board = pygame.Rect(0, 0, 1000, 1000)
 
@@ -26,19 +25,20 @@ class ServerDataBase(object):
         self.control = []
 
     def add_snake(self, id_, snake):
+        print 'snake added'
         self.snakes[id_] = snake
-        data = protocol.snake_new(id_, snake.name, snake.mass, snake.head.location, [t.location for t in snake.tail])
+        data = protocol.snake_new(id_, snake.name, snake.mass, snake.head.point.pos, [t.point.pos for t in snake.tail])
         self.control.append(data)
 
     def del_snake(self, id_):
+        print 'orb added'
         del self.snakes[id_]
         data = protocol.snake_delete(id_)
         self.control.append(data)
 
     def add_orb(self, id_, orb):
         self.orbs[id_] = orb
-        self.orbs_collision_group.add(orb)
-        data = protocol.orb_new(id_, orb.mass, orb.x, orb.y)
+        data = protocol.orb_new(id_, orb.mass, orb.point.x, orb.point.y)
         self.control.append(data)
 
     def del_orb(self, id_):
@@ -49,9 +49,9 @@ class ServerDataBase(object):
     def update(self):
         self.last_update = []
         self.move_snakes()
-        self.orbs_collision()
-        self.snakes_collision()
-        self.border_collision()
+        # self.orbs_collision()
+        # self.snakes_collision()
+        # self.border_collision()
         self.add_orbs()
 
     def move_snakes(self):
@@ -83,7 +83,7 @@ class ServerDataBase(object):
         while len(self.orbs) < ServerDataBase.ORB_LIMIT:
             x = random.randint(0, self.board.width)
             y = random.randint(0, self.board.height)
-            orb = objects.orb(x, y, 100, (152, 12, 58))
+            orb = objects.Orb(objects.Point(x, y), 100, (152, 12, 58))
             id_ = protocol.key(orb)
             self.add_orb(id_, orb)
 
@@ -95,9 +95,9 @@ class ServerDataBase(object):
     def get_new(self):
         update = []
         for id_, obj in self.snakes.iteritems():
-            data = protocol.snake_new(id_, obj.name, obj.mass, obj.head.location, [t.location for t in obj.tail])
+            data = protocol.snake_new(id_, obj.name, obj.mass, obj.head.point.pos, [t.point.pos for t in obj.tail])
             update.append(data)
         for id_, obj in self.orbs.iteritems():
-            data = protocol.orb_new(id_, obj.mass, obj.x, obj.y)
+            data = protocol.orb_new(id_, obj.mass, obj.point.x, obj.point.y)
             update.append(data)
         return update

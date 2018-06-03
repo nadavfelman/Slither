@@ -36,7 +36,6 @@ class client(object):
         self.sock.settimeout(0.01)
 
     def handle_event(self, event):
-        # pass
         if event.type == pygame.MOUSEMOTION:
             cx, cy = pygame.display.get_surface().get_rect().center
             px, py = event.pos
@@ -46,17 +45,9 @@ class client(object):
             protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update(self):
-        # self.update_angle()
+        print self.snakes
+        print self.orbs
         self.update_data()
-
-    def update_angle(self):
-        cx, cy = pygame.display.get_surface().get_size()
-        cx, cy = cx / 2, cy / 2
-        px, py = pygame.mouse.get_pos()
-        dx = px - cx
-        dy = py - cy
-        angle = atan2(dy, dx)
-        protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update_data(self):
         while True:
@@ -69,7 +60,7 @@ class client(object):
                 break
 
             if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.new:
-                snake = game.objects.snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
+                snake = game.objects.Snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
                 self.snakes[data['id']] = snake
                 if self.id_ == data['id']:
                     self.render_control.player = snake
@@ -80,7 +71,7 @@ class client(object):
             elif data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.delete:
                 del self.snakes[data['id']]
             elif data['type'] == protocol.Type.ORB and data['subtype'] == protocol.Subtype.ORB.new:
-                orb = game.objects.orb(data['x'], data['y'], data['mass'], (25, 178, 2))
+                orb = game.objects.Orb(game.objects.Point(data['x'], data['y']), data['mass'], (25, 178, 2))
                 self.orbs[data['id']] = orb
             elif data['type'] == protocol.Type.ORB and data['subtype'] == protocol.Subtype.ORB.delete:
                 del self.orbs[data['id']]

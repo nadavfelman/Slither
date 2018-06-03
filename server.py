@@ -65,7 +65,7 @@ class client_connection(threading.Thread):
             except Exception:
                 pass
 
-        snake = game.objects.playerSnake((100, 100), name)
+        snake = game.objects.PlayerSnake((100, 100), name)
         with clientsLock:
             clients[self.key].extend(game_data.get_new())
         with dataLock:

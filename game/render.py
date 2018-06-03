@@ -81,7 +81,7 @@ class render(object):
 
     def render(self, surface):
         if self.player:
-            self.camera_rect.center = self.player.head.location
+            self.camera_rect.center = self.player.point.pos
             # self.set_zoom(self.display_rect.height * .03 / self.player.get_radius() + 1)
 
         xoff, yoff = self.get_offsets()
@@ -92,7 +92,7 @@ class render(object):
     def render_snakes(self, surface, xoff, yoff):
         player_x, player_y = self.camera_rect.center
         for snake in self.snakes.itervalues():
-            obj_x, obj_y = snake.head.location
+            obj_x, obj_y = snake.head.point.pos
             dx, dy = player_x - obj_x, player_y - obj_y
             if (dx ** 2 + dy ** 2) ** 0.5 < self.display_rect.width:
                 snake.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
@@ -100,7 +100,7 @@ class render(object):
     def render_orbs(self, surface, xoff, yoff):
         player_x, player_y = self.camera_rect.center
         for orb in self.orbs.itervalues():
-            obj_x, obj_y = orb.x, orb.y
+            obj_x, obj_y = orb.point.x, orb.point.y
             dx, dy = player_x - obj_x, player_y - obj_y
             if (dx ** 2 + dy ** 2) ** 0.5 < self.display_rect.width:
                 orb.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
