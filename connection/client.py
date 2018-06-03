@@ -36,6 +36,7 @@ class client(object):
         self.sock.settimeout(0.01)
 
     def handle_event(self, event):
+        pass
         if event.type == pygame.MOUSEMOTION:
             cx, cy = pygame.display.get_surface().get_rect().center
             px, py = event.pos
@@ -45,9 +46,17 @@ class client(object):
             protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update(self):
-        print self.snakes
-        print self.orbs
+        self.update_angle()
         self.update_data()
+
+    def update_angle(self):
+        cx, cy = pygame.display.get_surface().get_size()
+        cx, cy = cx / 2, cy / 2
+        px, py = pygame.mouse.get_pos()
+        dx = px - cx
+        dy = py - cy
+        angle = atan2(dy, dx)
+        protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update_data(self):
         while True:
@@ -60,7 +69,7 @@ class client(object):
                 break
 
             if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.new:
-                snake = game.objects.Snake.create_snake(data['head'], data['name'], data['mass'], data['tail'])
+                snake = game.objects.Snake.create_snake(game.objects.Point(*data['head']), data['name'], data['mass'], data['tail'])
                 self.snakes[data['id']] = snake
                 if self.id_ == data['id']:
                     self.render_control.player = snake

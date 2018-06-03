@@ -53,6 +53,10 @@ class Section(Circle):
         super(Section, self).__init__(point, radius)
         self.angle = angle
 
+    @property
+    def distance(self):
+        return self.radius / 1.6
+
     def direct_to(self, point):
         self_x, self_y = self.point.pos
         loc_x, loc_y = point.pos
@@ -62,43 +66,41 @@ class Section(Circle):
 
     def next_location(self):
         next_point = self.point.copy()
-        next_point.x += self.radius * math.cos(self.angle)
-        next_point.y += self.radius * math.sin(self.angle)
+        next_point.x += self.distance * math.cos(self.angle)
+        next_point.y += self.distance * math.sin(self.angle)
         return next_point
 
     def move(self, distance):
         self.point.x += distance * math.cos(self.angle)
         self.point.y += distance * math.sin(self.angle)
 
-    def relocate(self, location, max_move=None):
+    def relocate(self, point, max_move=None):
         # break out if already in place
-        if self.next_location() == location:
+        if self.next_location().pos == point.pos:
             return
-
         # change the angle so it will point at the new location
-        self.direct_to(location)
-
+        self.direct_to(point)
         # check if the joint needs to be moved
         # if the head of the joint is on the location it does not need to be moved
-        if self.next_location() != location:
+        if self.next_location().pos != point.pos:
             # check if any max pixels moving distance was given.
             # if was given it checks whether the distance need to be moved is greater than the max moving distance.
             # if this returns true constrain the movement to the max moving distance else move regularly.
             # see attache number 0000.
             self_x, self_y = self.point.pos
-            loc_x, loc_y = location
+            loc_x, loc_y = point.pos
 
             distance_to = math.sqrt(
                 (self_x - loc_x) ** 2 + (self_y - loc_y) ** 2)
 
-            if max_move and distance_to - self.radius > max_move:
+            if max_move and distance_to - self.distance > max_move:
                 new_x = self_x + max_move * math.cos(self.angle)
                 new_y = self_y + max_move * math.sin(self.angle)
                 self.point.pos = (new_x, new_y)
 
             else:
-                new_x = loc_x - self.radius * math.cos(self.angle)
-                new_y = loc_y - self.radius * math.sin(self.angle)
+                new_x = loc_x - self.distance * math.cos(self.angle)
+                new_y = loc_y - self.distance * math.sin(self.angle)
                 self.point.pos = (new_x, new_y)
 
 
@@ -106,7 +108,7 @@ class Snake(object):
     """
     [summary]
     """
-    DEFAULT_MASS = 100
+    DEFAULT_MASS = 150
     DEFAULT_HEAD_COLOR = colors.RED
     DEFAULT_TAIL_COLOR = colors.GRAY66
 
@@ -122,13 +124,15 @@ class Snake(object):
 
     def __init__(self, point, name):
         self.name = name
-        self._mass = Snake.DEFAULT_MASS
+        self._mass = 0
 
         self.head = Section(point, self.radius)
         self.tail = []
 
         self.head_color = Snake.DEFAULT_HEAD_COLOR
         self.tail_color = Snake.DEFAULT_TAIL_COLOR
+
+        self.mass = Snake.DEFAULT_MASS
 
     def __str__(self):
         return 'snake obj'
@@ -138,7 +142,7 @@ class Snake(object):
 
     @property
     def radius(self):
-        return self.mass / 3000 + 4
+        return self.mass / 3000 + 10
 
     @property
     def distance(self):
@@ -150,7 +154,7 @@ class Snake(object):
 
     @property
     def location(self):
-        return self.head.point
+        return self.head.point.pos
 
     @property
     def angle(self):
@@ -182,20 +186,18 @@ class Snake(object):
         elif dl > 0:
             self.tail = self.tail[0: -abs(dl)]
 
-    def relocate(self, location):
-        self.head.relocate(location)
+    def relocate(self, point):
+        self.head.relocate(point)
         previous_point = self.head.point
         for sector in self.tail:
             sector.relocate(previous_point)
             previous_point = sector.point
 
     def render(self, surface, scale=1, xoff=0, yoff=0):
-        print 'render snake'
         self.render_snake(surface, scale=scale, xoff=xoff, yoff=yoff)
         self.render_name(surface, scale=scale, xoff=xoff, yoff=yoff)
 
     def render_snake(self, surface, scale=1, xoff=0, yoff=0):
-        print 'render snake obj'
         # scale vector (for matrix or vector multiplication)
         scale_vector = np.array([[scale, 0], [0, scale]])
         # scaled radius of the circle
@@ -244,7 +246,6 @@ class Snake(object):
                            pos, scaled_radius)  # draw the joint
 
     def render_name(self, surface, scale=1, xoff=0, yoff=0):
-        print 'render snake name'
         size = Snake.NAME_FONT_SIZE
         color = Snake.NAME_FONT_COLOR
 
@@ -260,14 +261,14 @@ class Snake(object):
         s = Snake(point, name)
         s.mass = mass
         for i, pos in enumerate(tail):
-            s.tail[i].pos = pos
+            s.tail[i].point.pos = pos
         return s
 
     def update_snake(self, mass, head, tail):
-        self.head.location = head
+        self.head.point.pos = head
         self.mass = mass
         for i, pos in enumerate(tail):
-            self.tail[i].pos = pos
+            self.tail[i].point.pos = pos
 
 
 class PlayerSnake(Snake):
@@ -275,10 +276,8 @@ class PlayerSnake(Snake):
     [summary] 
     """
 
-    REGULAR_SPEED = 0.7
+    REGULAR_SPEED = 1.1
     BOOST_SPEED = 5
-
-    MAX_ANGLE_CHANGE = math.radians(3)
 
     def __init__(self, location, name):
         super(PlayerSnake, self).__init__(location, name)

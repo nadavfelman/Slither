@@ -3,6 +3,9 @@ import threading
 import connection.protocol as protocol
 import game
 import pygame
+import math
+
+ANGLE_LIM = math.pi * 0.01
 
 clients = {}
 clientsLock = threading.Lock()
@@ -65,7 +68,7 @@ class client_connection(threading.Thread):
             except Exception:
                 pass
 
-        snake = game.objects.PlayerSnake((100, 100), name)
+        snake = game.objects.PlayerSnake(game.objects.Point(100, 100), name)
         with clientsLock:
             clients[self.key].extend(game_data.get_new())
         with dataLock:
@@ -87,7 +90,7 @@ class client_connection(threading.Thread):
                     data = protocol.parse(protocol.recv_data(self.client_socket))
                     with dataLock:
                         if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.change_angle:
-                            game_data.snakes[self.key].set_angle(data['angle'])
+                            game_data.snakes[self.key].set_angle(data['angle'], ANGLE_LIM)
                         elif data['type'] == protocol.Type.DISCONNECTION and data['subtype'] == protocol.Subtype.DISCONNECTION.announce:
                             break
                 except Exception:

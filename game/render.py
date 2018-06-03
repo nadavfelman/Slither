@@ -69,9 +69,9 @@ class render(object):
 
     def set_zoom(self, zoom):
         self.zoom = zoom
-        width = self.display_rect.width / zoom
-        height = self.display_rect.height / zoom
-        self.camera_rect.size = (width, height)
+        # width = self.display_rect.width / zoom
+        # height = self.display_rect.height / zoom
+        # self.camera_rect.size = (width, height)
 
     def get_offsets(self):
         x, y = self.camera_rect.center
@@ -81,8 +81,8 @@ class render(object):
 
     def render(self, surface):
         if self.player:
-            self.camera_rect.center = self.player.point.pos
-            # self.set_zoom(self.display_rect.height * .03 / self.player.get_radius() + 1)
+            self.camera_rect.center = self.player.location
+            # self.set_zoom(self.display_rect.height * .03 / self.player.radius + 1)
 
         xoff, yoff = self.get_offsets()
         self.render_background(surface, xoff, yoff)

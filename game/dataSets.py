@@ -25,13 +25,11 @@ class ServerDataBase(object):
         self.control = []
 
     def add_snake(self, id_, snake):
-        print 'snake added'
         self.snakes[id_] = snake
         data = protocol.snake_new(id_, snake.name, snake.mass, snake.head.point.pos, [t.point.pos for t in snake.tail])
         self.control.append(data)
 
     def del_snake(self, id_):
-        print 'orb added'
         del self.snakes[id_]
         data = protocol.snake_delete(id_)
         self.control.append(data)
@@ -57,7 +55,7 @@ class ServerDataBase(object):
     def move_snakes(self):
         for id_, snake in self.snakes.iteritems():
             snake.move()
-            data = protocol.snake_full_update(id_, snake.mass, snake.head.location, [t.location for t in snake.tail])
+            data = protocol.snake_full_update(id_, snake.mass, snake.head.point.pos, [t.point.pos for t in snake.tail])
             self.last_update.append(data)
 
     def orbs_collision(self):
