@@ -10,7 +10,7 @@ class ServerDataBase(object):
 
     """
 
-    ORB_LIMIT = 50
+    ORB_LIMIT = 300
 
     def __init__(self):
         """
@@ -19,7 +19,7 @@ class ServerDataBase(object):
         self.snakes = {}
         self.orbs = {}
 
-        self.board = pygame.Rect(0, 0, 1000, 1000)
+        self.board = pygame.Rect(0, 0, 5000, 5000)
 
         self.last_update = []
         self.control = []
@@ -47,8 +47,8 @@ class ServerDataBase(object):
     def update(self):
         self.last_update = []
         self.move_snakes()
-        # self.orbs_collision()
-        # self.snakes_collision()
+        self.orbs_collision()
+        self.snakes_collision()
         # self.border_collision()
         self.add_orbs()
 
@@ -63,7 +63,7 @@ class ServerDataBase(object):
             for key, orb in self.orbs.items():
                 if snake.any_collide(orb):
                     self.del_orb(key)
-                    snake.add_mass(orb.mass)
+                    snake.mass += orb.mass
 
     def snakes_collision(self):
         for key, snake in self.snakes.items():

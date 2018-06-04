@@ -42,6 +42,12 @@ class Circle(object):
     def __repr__(self):
         return self.__str__()
 
+    def collide(self, other):
+        dx = self.point.x - other.point.x
+        dy = self.point.y - other.point.y
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        return self.radius + other.radius >= distance
+
 
 class Section(Circle):
     """
@@ -318,16 +324,18 @@ class PlayerSnake(Snake):
     def direct_to(self, point):
         self.head.direct_to(point)
 
-    def tail_collide(self, sprite_obj):
-        pass
+    def tail_collide(self, circle):
+        for t in self.tail:
+            if t.collide(circle):
+                return True
 
-    def head_collide(self, sprite_obj):
-        pass
+    def head_collide(self, circle):
+        return self.head.collide(circle)
 
-    def any_collide(self, sprite_obj):
-        pass
+    def any_collide(self, circle):
+        return self.tail_collide(circle) or self.head_collide(circle)
 
-    def boarders_collide(self, board_rect):
+    def boarders_collide(self, circle):
         pass
 
 
