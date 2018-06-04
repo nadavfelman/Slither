@@ -335,8 +335,16 @@ class PlayerSnake(Snake):
     def any_collide(self, circle):
         return self.tail_collide(circle) or self.head_collide(circle)
 
-    def boarders_collide(self, circle):
-        pass
+    def boarders_collide(self, board_rect):
+        if any([t.point.y - t.radius < board_rect.top for t in self.tail]):
+            return True
+        elif any([t.point.y + t.radius > board_rect.bottom for t in self.tail]):
+            return True
+        elif any([t.point.x - t.radius < board_rect.left for t in self.tail]):
+            return True
+        elif any([t.point.x + t.radius > board_rect.right for t in self.tail]):
+            return True
+        return False
 
 
 class Orb(Circle):

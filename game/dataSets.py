@@ -49,7 +49,7 @@ class ServerDataBase(object):
         self.move_snakes()
         self.orbs_collision()
         self.snakes_collision()
-        # self.border_collision()
+        self.border_collision()
         self.add_orbs()
 
     def move_snakes(self):
