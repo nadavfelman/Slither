@@ -249,28 +249,44 @@ class Text(BaseElement):
     FONT_NAME = None
     SIZE = 48
 
-    def __init__(self, x, y, text, font_name, size, color=None, center=False):
+    def __init__(self, x, y, text, font_name=None, size=None, color=None, center=False):
         super(Text, self).__init__()
 
         self.font = pygame.font.Font(
             font_name or Text.FONT_NAME, int(round(size or Text.SIZE)))
-        self.lines = text.split('\n')
+        self._text = ''
+        self.text_surfaces = []
 
         self.center = center
         self.color = color or Text.COLOR
         self.x = int(round(x))
         self.y = int(round(y))
 
+        self.text = text
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        self._text = text
+        self.text_surfaces = []
+
+        lines = text.split('\n')
+        for line in lines:
+            text_surface = self.font.render(line, True, self.color)
+            self.text_surfaces.append(text_surface)
+
     def render(self, surface):
-        for line_num, line_text in enumerate(self.lines):
-            textSurface = self.font.render(line_text, True, self.color)
-            text_rect = textSurface.get_rect()
+        for line_num, text_surface in enumerate(self.text_surfaces):
+            text_rect = text_surface.get_rect()
             pos = (self.x, self.y + (line_num * self.font.get_height()))
             if self.center:
                 text_rect.center = pos
             else:
                 text_rect.topleft = pos
-            surface.blit(textSurface, text_rect)
+            surface.blit(text_surface, text_rect)
 
 
 class Image(BaseElement):

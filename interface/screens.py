@@ -404,13 +404,24 @@ class GameWindow(elements.Screen):
     """
 
     def __init__(self, w, h, ip, name):
+        def info_update():
+            if self.client.id_ and self.client.id_ in self.client.snakes:
+                self.player_info.text = 'Current mass: ' + str(self.client.snakes[self.client.id_].mass)
+
         self.client = connection.client.client(ip, name)
+        self.player_info = elements.Text(0.005 * w, 0.0085 * h, '',
+                                  assets.Font_Segoe_UI_Semilight, 0.02 * h,
+                                  colors.GRAY40)
+        self.player_info.update = info_update
+
 
         # set rerendering
         self.client.need_rerender = True
+        self.player_info.need_rerender = True
 
         # set update
         self.client.need_update = True
+        self.player_info.need_update = True
 
         # set event handling
         self.client.need_events = True
@@ -422,3 +433,4 @@ class GameWindow(elements.Screen):
         super(GameWindow, self).__init__()
 
         self.elements_objs.append(self.client)
+        self.elements_objs.append(self.player_info)

@@ -11,7 +11,7 @@ class ServerDataBase(object):
 
     """
 
-    ORB_LIMIT = 1000
+    ORB_LIMIT = 350
 
     def __init__(self):
         """
@@ -20,7 +20,7 @@ class ServerDataBase(object):
         self.snakes = {}
         self.orbs = {}
 
-        self.board = pygame.Rect(0, 0, 5000, 5000)
+        self.board = pygame.Rect(0, 0, 2000, 2000)
 
         self.last_update = []
         self.control = []
