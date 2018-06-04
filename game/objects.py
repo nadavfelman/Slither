@@ -61,7 +61,7 @@ class Section(Circle):
 
     @property
     def distance(self):
-        return self.radius / 1.6
+        return self.radius / 1.4
 
     def direct_to(self, point):
         self_x, self_y = self.point.pos
@@ -148,15 +148,17 @@ class Snake(object):
 
     @property
     def radius(self):
-        return self.mass / 3000 + 10
+        return 10
+        # return self.mass / 3000 + 10
 
     @property
     def distance(self):
-        return self.mass / 4500 + 3
+        raise NotImplemented('distance should not be used in snake')
+        # return self.mass / 4500 + 3
 
     @property
     def length(self):
-        return self.mass / 150 + 10
+        return self.mass / 100 + 10
 
     @property
     def location(self):
@@ -282,7 +284,7 @@ class PlayerSnake(Snake):
     [summary] 
     """
 
-    REGULAR_SPEED = 1.1
+    REGULAR_SPEED = 2
     BOOST_SPEED = 5
 
     def __init__(self, location, name):

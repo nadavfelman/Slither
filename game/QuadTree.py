@@ -1,11 +1,8 @@
-import random
-import time
-
-
 class Point(object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, data=None):
         self.x = x
         self.y = y
+        self.data = data
 
     def __str__(self):
         return 'Point\{x: {}, y: {}\}'.format(self.x, self.y)
@@ -94,29 +91,3 @@ class QuadTree(object):
                 found_points.extend(self.south_west_QT.qurey(rect))
                 found_points.extend(self.south_east_QT.qurey(rect))
         return found_points
-
-
-points = []
-section = Rect(100, 100, 10, 10)
-for _ in xrange(1000):
-    x, y = random.randint(0, 400), random.randint(0, 400)
-    p = Point(x, y)
-    points.append(p)
-    # print x, y
-
-start = time.time()
-qt = QuadTree(Rect(200, 200, 200, 200), 4)
-for p in points:
-    qt.insert(p)
-
-for _ in xrange(3):
-    qt.qurey(section)
-print time.time() - start
-
-start = time.time()
-for _ in xrange(3):
-    inside = []
-    for p in points:
-        if section.collide(p):
-            inside.append(p)
-print time.time() - start

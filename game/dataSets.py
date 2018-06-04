@@ -2,6 +2,7 @@ import objects
 import connection.protocol as protocol
 import pygame
 import random
+import  QuadTree
 
 
 class ServerDataBase(object):
@@ -10,7 +11,7 @@ class ServerDataBase(object):
 
     """
 
-    ORB_LIMIT = 300
+    ORB_LIMIT = 1000
 
     def __init__(self):
         """
@@ -46,8 +47,12 @@ class ServerDataBase(object):
 
     def update(self):
         self.last_update = []
+        quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx, self.board.centery, self.board.width / 2, self.board.height / 2), 5)
+        for key, orb in self.orbs.iteritems():
+            quad_tree.insert(QuadTree.Point(orb.point.x, orb.point.y, key))
+
         self.move_snakes()
-        self.orbs_collision()
+        self.orbs_collision(quad_tree)
         self.snakes_collision()
         self.border_collision()
         self.add_orbs()
@@ -58,12 +63,20 @@ class ServerDataBase(object):
             data = protocol.snake_full_update(id_, snake.mass, snake.head.point.pos, [t.point.pos for t in snake.tail])
             self.last_update.append(data)
 
-    def orbs_collision(self):
+    def orbs_collision(self, quad_tree):
         for snake in self.snakes.itervalues():
-            for key, orb in self.orbs.items():
-                if snake.any_collide(orb):
-                    self.del_orb(key)
-                    snake.mass += orb.mass
+            for sector in [snake.head] + snake.tail:
+                range = QuadTree.Rect(sector.point.x, sector.point.y, sector.radius + objects.Orb.MAX_RADIUS, sector.radius + objects.Orb.MAX_RADIUS)
+                orbs = quad_tree.qurey(range)
+                for orb_point in orbs:
+                    key = orb_point.data
+                    if key not in self.orbs:
+                        continue
+
+                    orb = self.orbs[key]
+                    if sector.collide(orb):
+                        self.del_orb(key)
+                        snake.mass += orb.mass
 
     def snakes_collision(self):
         for key, snake in self.snakes.items():

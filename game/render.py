@@ -110,9 +110,6 @@ class render(object):
         x = -self.camera_rect.x if self.camera_rect.x < 0 else 0
         y = -self.camera_rect.y if self.camera_rect.y < 0 else 0
 
-        # width = round(min(self.display_rect.width - x, self.board_rect.height))
-        # height = round(min(self.display_rect.height - y, self.board_rect.height))
-
         if self.camera_rect.right > self.board_rect.right:
             width = self.board_rect.right - self.camera_rect.x - x
         else:
