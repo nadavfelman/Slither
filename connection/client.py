@@ -31,8 +31,10 @@ class client(object):
                 break
 
         self.render_control = game.render.render(self.display, self.board, self.snakes, self.orbs)
-
         protocol.send_data(self.sock, protocol.initial_client(name))
+
+        # set timeout
+        # timeout is on only after init
         self.sock.settimeout(0.01)
 
     def handle_event(self, event):
