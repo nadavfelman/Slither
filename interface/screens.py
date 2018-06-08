@@ -524,23 +524,25 @@ class GameStartSubwindow(elements.Screen):
 
     def __init__(self, w, h):
         # create the elements
-        self.container = elements.Container(0.187500 * w, 0.296296 * h,
-                                            0.625000 * w, 0.462963 * h,
+        self.container = elements.Container(0.180729 * w, 0.312963 * h,
+                                            0.625000 * w, 0.375000 * h,
                                             color=colors.GRAY235,
                                             border_color=colors.GRAY92,
                                             border_size=0.001852 * h)
 
-        self.title = elements.Text(0.200000 * w, 0.305556 * h,
-                                   'Multiplayer Connection',
+        self.title = elements.Text(0.192708 * w, 0.324074 * h,
+                                   'Game',
                                    assets.Font_Segoe_UI_Semilight,
                                    0.050925 * h, colors.GRAY66)
 
-        text = 'Press start to start to play'
-        self.text = elements.Text(0.200000 * w, 0.376852 * h, text,
+        text = "You successfully connected to the server.\n" \
+               "Press start to spawn into the game and start playing.\n" \
+               "Press exit to close the game."
+        self.text = elements.Text(0.192708 * w, 0.393519 * h, text,
                                   assets.Font_Segoe_UI_Light, 0.046296 * h,
                                   colors.GRAY92)
 
-        self.join_button = elements.Button(0.200000 * w, 0.663889 * h,
+        self.join_button = elements.Button(0.192708 * w, 0.597222 * h,
                                            0.476042 * w, 0.070370 * h,
                                            text='start',
                                            text_color=colors.GRAY92,
@@ -550,7 +552,7 @@ class GameStartSubwindow(elements.Screen):
                                            font_name=assets.Font_Segoe_UI_Light,
                                            font_size=0.050926 * h)
 
-        self.cancel_button = elements.Button(0.684375 * w, 0.663889 * h,
+        self.cancel_button = elements.Button(0.677083 * w, 0.597222 * h,
                                              0.107292 * w, 0.070370 * h, 'exit',
                                              text_color=colors.GRAY235,
                                              regular=colors.RED68,
@@ -559,8 +561,8 @@ class GameStartSubwindow(elements.Screen):
                                              font_name=assets.primary_font,
                                              font_size=0.044444 * h)
 
-        self.line = elements.Line(0.200000 * w, 0.379630 * h, 0.770833 * w,
-                                  0.379630 * h,
+        self.line = elements.Line(0.192708 * w, 0.396296 * h, 0.789583 * w,
+                                  0.396296 * h,
                                   width=0.001852 * h,
                                   color=colors.GRAY173)
 
