@@ -406,7 +406,7 @@ class GameWindow(elements.Screen):
     def __init__(self, w, h, ip, name):
         def info_update():
             if self.client.id_ and self.client.id_ in self.client.snakes:
-                self.player_info.text = 'Current mass: ' + str(self.client.snakes[self.client.id_].mass)
+                self.game_gui.player_info.text = 'Current mass: ' + str(self.client.snakes[self.client.id_].mass)
 
         def leaderboard_update():
             string = ''
@@ -423,44 +423,27 @@ class GameWindow(elements.Screen):
                 string += '{}.\n'.format(count + 1)
                 count += 1
 
-            self.leaderboard.text = string
+            self.game_gui.leaderboard.text = string
+
+        def start_game():
+            connection.protocol.send_data(self.client.sock, connection.protocol.game_start())
 
         self.client = connection.client.client(ip, name)
+        self.game_gui = GameGUI(w, h)
+        self.game_start_sub = GameStartSubwindow(w, h)
 
-        self.info_container = elements.Container(0.006 * w, 0.0085 * h,
-                                                    0.12 * w, 0.03 * h,
-                                                    color=colors.GRAY235,
-                                                    border_color=colors.GRAY173,
-                                                    border_size=0.001852 * h)
-        self.player_info = elements.Text(0.01 * w, 0.0085 * h, '',
-                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
-                                         colors.GRAY40)
-        self.player_info.update = info_update
-
-        self.leaderboard_container = elements.Container(0.006 * w, 0.05 * h,
-                                                    0.12 * w, 0.31 * h,
-                                                    color=colors.GRAY235,
-                                                    border_color=colors.GRAY173,
-                                                    border_size=0.001852 * h)
-        self.leaderboard = elements.Text(0.01 * w, 0.05 * h, '',
-                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
-                                         colors.GRAY40)
-        self.leaderboard.update = leaderboard_update
+        self.game_gui.player_info.update = info_update
+        self.game_gui.leaderboard.update = leaderboard_update
+        self.game_start_sub.join_button.fnc = start_game
 
         # set rerendering
         self.client.need_rerender = True
-        self.player_info.need_rerender = True
-        self.leaderboard.need_rerender = True
-        self.info_container.need_rerender = True
-        self.leaderboard_container.need_rerender = True
 
         # set update
         self.client.need_update = True
-        self.player_info.need_update = True
-        self.leaderboard.need_update = True
 
         # set event handling
-        self.client.need_events = True
+        self.client.need_events = False
 
         # set closing
         self.client.need_closing = True
@@ -469,7 +452,134 @@ class GameWindow(elements.Screen):
         super(GameWindow, self).__init__()
 
         self.elements_objs.append(self.client)
+
+        self.windows_objs.append(self.game_gui)
+        self.windows_objs.append(self.game_start_sub)
+
+        self.set_actives(self.game_start_sub)
+
+    def update(self):
+        if self.client.id_ not in self.client.snakes:
+            self.set_actives(self.game_start_sub)
+            self.client.need_events = False
+        else:
+            self.set_actives(self.game_gui)
+            self.client.need_events = True
+        super(GameWindow, self).update()
+
+
+class GameGUI(elements.Screen):
+    """
+
+    """
+
+    def __init__(self, w, h):
+        self.info_container = elements.Container(0.006 * w, 0.0085 * h,
+                                                 0.12 * w, 0.03 * h,
+                                                 color=colors.GRAY235,
+                                                 border_color=colors.GRAY173,
+                                                 border_size=0.001852 * h)
+
+        self.player_info = elements.Text(0.01 * w, 0.0085 * h, '',
+                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
+                                         colors.GRAY40)
+
+        self.leaderboard_container = elements.Container(0.006 * w, 0.05 * h,
+                                                        0.12 * w, 0.31 * h,
+                                                        color=colors.GRAY235,
+                                                        border_color=colors.GRAY173,
+                                                        border_size=0.001852 * h)
+
+        self.leaderboard = elements.Text(0.01 * w, 0.05 * h, '',
+                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
+                                         colors.GRAY40)
+
+        # set rerendering
+        self.player_info.need_rerender = True
+        self.leaderboard.need_rerender = True
+        self.info_container.need_rerender = True
+        self.leaderboard_container.need_rerender = True
+
+        # set update
+        self.player_info.need_update = True
+        self.leaderboard.need_update = True
+
+        # set event handling
+
+        # set closing
+
+        # initialize variables
+        super(GameGUI, self).__init__()
+
         self.elements_objs.append(self.leaderboard_container)
         self.elements_objs.append(self.info_container)
         self.elements_objs.append(self.player_info)
         self.elements_objs.append(self.leaderboard)
+
+
+class GameStartSubwindow(elements.Screen):
+    """
+    [summary]
+    """
+
+    def __init__(self, w, h):
+        # create the elements
+        self.container = elements.Container(0.187500 * w, 0.296296 * h,
+                                            0.625000 * w, 0.462963 * h,
+                                            color=colors.GRAY235,
+                                            border_color=colors.GRAY92,
+                                            border_size=0.001852 * h)
+
+        self.title = elements.Text(0.200000 * w, 0.305556 * h,
+                                   'Multiplayer Connection',
+                                   assets.Font_Segoe_UI_Semilight,
+                                   0.050925 * h, colors.GRAY66)
+
+        text = 'Press start to start to play'
+        self.text = elements.Text(0.200000 * w, 0.376852 * h, text,
+                                  assets.Font_Segoe_UI_Light, 0.046296 * h,
+                                  colors.GRAY92)
+
+        self.join_button = elements.Button(0.200000 * w, 0.663889 * h,
+                                           0.476042 * w, 0.070370 * h,
+                                           text='start',
+                                           text_color=colors.GRAY92,
+                                           regular=colors.GREEN_FL,
+                                           hover=colors.GREEN_FLST,
+                                           click=colors.GREEN_FLSTDE,
+                                           font_name=assets.Font_Segoe_UI_Light,
+                                           font_size=0.050926 * h)
+
+        self.cancel_button = elements.Button(0.684375 * w, 0.663889 * h,
+                                             0.107292 * w, 0.070370 * h, 'exit',
+                                             text_color=colors.GRAY235,
+                                             regular=colors.RED68,
+                                             hover=colors.RED54,
+                                             click=colors.RED38,
+                                             font_name=assets.primary_font,
+                                             font_size=0.044444 * h)
+
+        self.line = elements.Line(0.200000 * w, 0.379630 * h, 0.770833 * w,
+                                  0.379630 * h,
+                                  width=0.001852 * h,
+                                  color=colors.GRAY173)
+
+        # set rerendering
+        self.join_button.need_rerender = True
+        self.cancel_button.need_rerender = True
+
+        # set update
+
+        # set event handling
+        self.join_button.need_events = True
+        # self.cancel_button.need_events = True
+
+        # initialize variables
+        super(GameStartSubwindow, self).__init__()
+
+        self.elements_objs.append(self.container)
+        self.elements_objs.append(self.title)
+        self.elements_objs.append(self.line)
+        self.elements_objs.append(self.text)
+        self.elements_objs.append(self.join_button)
+        self.elements_objs.append(self.cancel_button)

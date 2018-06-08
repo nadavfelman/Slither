@@ -4,8 +4,9 @@ import connection.protocol as protocol
 import game
 import pygame
 import math
+import random
 
-ANGLE_LIM = math.pi * 0.01
+ANGLE_LIM = math.pi * 0.04
 
 clients = {}
 clientsLock = threading.Lock()
@@ -68,11 +69,8 @@ class client_connection(threading.Thread):
             except Exception:
                 pass
 
-        snake = game.objects.PlayerSnake(game.objects.Point(100, 100), name)
         with clientsLock:
             clients[self.key].extend(game_data.get_new())
-        with dataLock:
-            game_data.add_snake(self.key, snake)
 
         while True:
             try:
@@ -90,7 +88,11 @@ class client_connection(threading.Thread):
                     data = protocol.parse(protocol.recv_data(self.client_socket))
                     with dataLock:
                         if data['type'] == protocol.Type.SNAKE and data['subtype'] == protocol.Subtype.SNAKE.change_angle:
-                            game_data.snakes[self.key].set_angle(data['angle'], ANGLE_LIM)
+                            if self.key in game_data.snakes:
+                                game_data.snakes[self.key].set_angle(data['angle'], ANGLE_LIM)
+                        elif data['type'] == protocol.Type.GAME and data['subtype'] == protocol.Subtype.GAME.start:
+                            snake = game.objects.PlayerSnake(game.objects.Point(random.randint(0, game_data.board.width), random.randint(0, game_data.board.height)), name)
+                            game_data.add_snake(self.key, snake)
                         elif data['type'] == protocol.Type.DISCONNECTION and data['subtype'] == protocol.Subtype.DISCONNECTION.announce:
                             break
                 except Exception:
@@ -118,7 +120,7 @@ def main():
         print 'Cycles Per Second: {}'.format(clock.get_fps())
         try:
             client_socket, client_addr = server_socket.accept()
-            print 'New Client Connected\n\taddress: {}'.format(client_addr)
+            print 'New Client Connected. address: {}'.format(client_addr)
             client_thread = client_connection(client_socket, client_addr)
             client_thread.start()
         except socket.timeout:

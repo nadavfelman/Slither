@@ -34,6 +34,7 @@ class Type:
     DISCONNECTION = 4
     INITIAL = 5
     CONTROL = 8
+    GAME = 9
 
     # management/update
     SNAKE = 6
@@ -79,6 +80,9 @@ class Subtype:
 
     class CONTROL:
         stream_end = 0
+
+    class GAME:
+        start = 0
 
 
 """
@@ -247,6 +251,12 @@ def initial_client(name):
 def control_stream_end():
     data = struct.pack('!H', Type.CONTROL)
     data += struct.pack('!H', Subtype.CONTROL.stream_end)
+    return data
+
+
+def game_start():
+    data = struct.pack('!H', Type.GAME)
+    data += struct.pack('!H', Subtype.GAME.start)
     return data
 
 
@@ -420,7 +430,12 @@ def __initial_client_parser(data):
     return kwargs
 
 
-def __control_stream_end(data):
+def __control_stream_end_parser(data):
+    kwargs = {}
+    return kwargs
+
+
+def __game_start_parser(data):
     kwargs = {}
     return kwargs
 
@@ -446,7 +461,8 @@ DISPATCHER = {
     (Type.ORB, Subtype.ORB.delete): __orb_delete_parser,
     (Type.INITIAL, Subtype.INITIAL.server): __initial_server_parser,
     (Type.INITIAL, Subtype.INITIAL.client): __initial_client_parser,
-    (Type.CONTROL, Subtype.CONTROL.stream_end): __control_stream_end,
+    (Type.CONTROL, Subtype.CONTROL.stream_end): __control_stream_end_parser,
+    (Type.GAME, Subtype.GAME.start): __game_start_parser,
 }
 
 
