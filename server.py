@@ -101,13 +101,15 @@ class client_connection(threading.Thread):
         with clientsLock:
             del clients[self.key]
         with dataLock:
-            game_data.del_snake(self.key)
+            if self.key in game_data.snakes:
+                game_data.del_snake(self.key)
         self.client_socket.close()
 
 
 def main():
     print 'server started'
     server_socket = socket.socket()
+    # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(('0.0.0.0', protocol.PORT))
     server_socket.listen(10)
     server_socket.settimeout(0.001)

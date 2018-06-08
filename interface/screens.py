@@ -44,7 +44,7 @@ class ControlScreen(elements.Screen):
             subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'],
                              shell=True, stdin=None, stdout=None,
                              stderr=None, close_fds=True)
-            time.sleep(1)
+            time.sleep(1.6)
             # os.system(r"start /wait cmd /c python .\connection\server.py")
             name = self.main_win.inputbox.text
             self.game = GameWindow(w, h, '127.0.0.1', name)
@@ -408,20 +408,56 @@ class GameWindow(elements.Screen):
             if self.client.id_ and self.client.id_ in self.client.snakes:
                 self.player_info.text = 'Current mass: ' + str(self.client.snakes[self.client.id_].mass)
 
+        def leaderboard_update():
+            string = ''
+            string += 'Players Leaderboard:\n'
+            count = 0
+
+            for snake in sorted(self.client.snakes.itervalues(), key=lambda s: s.mass):
+                if not count < 10:
+                    continue
+                string += '{}. {}\n'.format(count + 1, snake.name)
+                count += 1
+
+            for i in xrange(count, 10):
+                string += '{}.\n'.format(count + 1)
+                count += 1
+
+            self.leaderboard.text = string
+
         self.client = connection.client.client(ip, name)
-        self.player_info = elements.Text(0.005 * w, 0.0085 * h, '',
-                                  assets.Font_Segoe_UI_Semilight, 0.02 * h,
-                                  colors.GRAY40)
+
+        self.info_container = elements.Container(0.006 * w, 0.0085 * h,
+                                                    0.12 * w, 0.03 * h,
+                                                    color=colors.GRAY235,
+                                                    border_color=colors.GRAY173,
+                                                    border_size=0.001852 * h)
+        self.player_info = elements.Text(0.01 * w, 0.0085 * h, '',
+                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
+                                         colors.GRAY40)
         self.player_info.update = info_update
 
+        self.leaderboard_container = elements.Container(0.006 * w, 0.05 * h,
+                                                    0.12 * w, 0.31 * h,
+                                                    color=colors.GRAY235,
+                                                    border_color=colors.GRAY173,
+                                                    border_size=0.001852 * h)
+        self.leaderboard = elements.Text(0.01 * w, 0.05 * h, '',
+                                         assets.Font_Segoe_UI_Semilight, 0.02 * h,
+                                         colors.GRAY40)
+        self.leaderboard.update = leaderboard_update
 
         # set rerendering
         self.client.need_rerender = True
         self.player_info.need_rerender = True
+        self.leaderboard.need_rerender = True
+        self.info_container.need_rerender = True
+        self.leaderboard_container.need_rerender = True
 
         # set update
         self.client.need_update = True
         self.player_info.need_update = True
+        self.leaderboard.need_update = True
 
         # set event handling
         self.client.need_events = True
@@ -433,4 +469,7 @@ class GameWindow(elements.Screen):
         super(GameWindow, self).__init__()
 
         self.elements_objs.append(self.client)
+        self.elements_objs.append(self.leaderboard_container)
+        self.elements_objs.append(self.info_container)
         self.elements_objs.append(self.player_info)
+        self.elements_objs.append(self.leaderboard)

@@ -36,7 +36,7 @@ class client(object):
         self.sock.settimeout(0.01)
 
     def handle_event(self, event):
-        pass
+        return
         if event.type == pygame.MOUSEMOTION:
             cx, cy = pygame.display.get_surface().get_rect().center
             px, py = event.pos
