@@ -413,7 +413,7 @@ class GameWindow(elements.Screen):
             string += 'Players Leaderboard:\n'
             count = 0
 
-            for snake in sorted(self.client.snakes.itervalues(), key=lambda s: s.mass):
+            for snake in sorted(self.client.snakes.itervalues(), key=lambda s: s.mass, reverse=True):
                 if not count < 10:
                     continue
                 string += '{}. {}\n'.format(count + 1, snake.name)
