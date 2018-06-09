@@ -15,18 +15,7 @@ dataLock = threading.Lock()
 clock = pygame.time.Clock()
 
 
-def send_all(data):
-    if hasattr(data, '__iter__'):
-        with dataLock:
-            for client in clients.iterkeys():
-                clients[client].expend(data)
-    else:
-        with dataLock:
-            for client in clients.iterkeys():
-                clients[client].append(data)
-
-
-class client_connection(threading.Thread):
+class ClientConnection(threading.Thread):
     """
     [summary]
     """
@@ -40,7 +29,7 @@ class client_connection(threading.Thread):
             client_addr {[type]} -- [description]
         """
 
-        super(client_connection, self).__init__()
+        super(ClientConnection, self).__init__()
         self.client_addr = client_addr
         self.client_socket = client_socket
         self.key = protocol.key(self.client_socket)
@@ -49,11 +38,6 @@ class client_connection(threading.Thread):
         """
         [summary]
         """
-
-        global clients
-        global clientsLock
-        global game_data
-
         with clientsLock:
             clients[self.key] = []
 
@@ -121,7 +105,7 @@ def main():
         try:
             client_socket, client_addr = server_socket.accept()
             print 'New Client Connected. address: {}'.format(client_addr)
-            client_thread = client_connection(client_socket, client_addr)
+            client_thread = ClientConnection(client_socket, client_addr)
             client_thread.start()
         except socket.timeout:
             pass

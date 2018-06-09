@@ -405,8 +405,9 @@ class GameWindow(elements.Screen):
 
     def __init__(self, w, h, ip, name):
         def info_update():
-            if self.client.id_ and self.client.id_ in self.client.snakes:
-                self.game_gui.player_info.text = 'Current mass: ' + str(self.client.snakes[self.client.id_].mass)
+            player = self.client.get_player()
+            if player:
+                self.game_gui.player_info.text = 'Current mass: ' + str(player.mass)
 
         def leaderboard_update():
             string = ''
@@ -425,16 +426,13 @@ class GameWindow(elements.Screen):
 
             self.game_gui.leaderboard.text = string
 
-        def start_game():
-            connection.protocol.send_data(self.client.sock, connection.protocol.game_start())
-
         self.client = connection.client.client(ip, name)
         self.game_gui = GameGUI(w, h)
         self.game_start_sub = GameStartSubwindow(w, h)
 
         self.game_gui.player_info.update = info_update
         self.game_gui.leaderboard.update = leaderboard_update
-        self.game_start_sub.join_button.fnc = start_game
+        self.game_start_sub.join_button.fnc = self.client.start_game()
 
         # set rerendering
         self.client.need_rerender = True
@@ -459,7 +457,7 @@ class GameWindow(elements.Screen):
         self.set_actives(self.game_start_sub)
 
     def update(self):
-        if self.client.id_ not in self.client.snakes:
+        if self.client.key not in self.client.snakes:
             self.set_actives(self.game_start_sub)
             self.client.need_events = False
         else:
