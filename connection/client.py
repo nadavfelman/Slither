@@ -5,10 +5,9 @@ import pygame
 
 import game
 import protocol
-from interface import None
 
 
-class client(object):
+class Client(object):
     """
     [summary]
     """

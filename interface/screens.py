@@ -426,13 +426,13 @@ class GameWindow(elements.Screen):
 
             self.game_gui.leaderboard.text = string
 
-        self.client = connection.client.client(ip, name)
+        self.client = connection.client.Client(ip, name)
         self.game_gui = GameGUI(w, h)
         self.game_start_sub = GameStartSubwindow(w, h)
 
         self.game_gui.player_info.update = info_update
         self.game_gui.leaderboard.update = leaderboard_update
-        self.game_start_sub.join_button.fnc = self.client.start_game()
+        self.game_start_sub.join_button.fnc = self.client.start_game
 
         # set rerendering
         self.client.need_rerender = True
