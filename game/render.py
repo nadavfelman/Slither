@@ -1,6 +1,6 @@
 import pygame
 import interface.colors as colors
-
+import assets
 
 class Rect(object):
     def __init__(self, x, y, width, height):
@@ -106,7 +106,7 @@ class render(object):
                 orb.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
 
     def render_background(self, surface, xoff, yoff):
-        surface.fill(colors.RED)
+        surface.fill(colors.DEAD_RED)
         x = -self.camera_rect.x if self.camera_rect.x < 0 else 0
         y = -self.camera_rect.y if self.camera_rect.y < 0 else 0
 
@@ -124,7 +124,7 @@ class render(object):
 
 
 def message_display(surface, text, x, y, size, color, center=True):
-    font = pygame.font.Font('freesansbold.ttf', size)
+    font = pygame.font.Font(assets.Font_Segoe_UI, size)
     textSurface = font.render(text, True, color)
     TextRect = textSurface.get_rect()
     if center:

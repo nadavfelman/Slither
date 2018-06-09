@@ -37,7 +37,7 @@ class ServerDataBase(object):
 
     def add_orb(self, id_, orb):
         self.orbs[id_] = orb
-        data = protocol.orb_new(id_, orb.mass, orb.point.x, orb.point.y)
+        data = protocol.orb_new(id_, orb.mass, orb.point.x, orb.point.y, orb.color)
         self.control.append(data)
 
     def del_orb(self, id_):
@@ -94,7 +94,7 @@ class ServerDataBase(object):
         while len(self.orbs) < ServerDataBase.ORB_LIMIT:
             x = random.randint(0, self.board.width)
             y = random.randint(0, self.board.height)
-            orb = objects.Orb(objects.Point(x, y), 100, (152, 12, 58))
+            orb = objects.Orb(objects.Point(x, y))
             id_ = protocol.key(orb)
             self.add_orb(id_, orb)
 
@@ -105,10 +105,10 @@ class ServerDataBase(object):
 
     def get_new(self):
         update = []
-        for id_, obj in self.snakes.iteritems():
-            data = protocol.snake_new(id_, obj.name, obj.mass, obj.head.point.pos, [t.point.pos for t in obj.tail])
+        for id_, snake in self.snakes.iteritems():
+            data = protocol.snake_new(id_, snake.name, snake.mass, snake.head.point.pos, [t.point.pos for t in snake.tail])
             update.append(data)
-        for id_, obj in self.orbs.iteritems():
-            data = protocol.orb_new(id_, obj.mass, obj.point.x, obj.point.y)
+        for id_, orb in self.orbs.iteritems():
+            data = protocol.orb_new(id_, orb.mass, orb.point.x, orb.point.y, orb.color)
             update.append(data)
         return update

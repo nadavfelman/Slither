@@ -215,13 +215,17 @@ def snake_change_angle(angle):
     return data
 
 
-def orb_new(id_, mass, x, y):
+def orb_new(id_, mass, x, y, color):
     data = struct.pack('!H', Type.ORB)
     data += struct.pack('!H', Subtype.ORB.new)
     data += id_
-    data += struct.pack('!b', mass)
+    data += struct.pack('!B', mass)
     data += struct.pack('!f', x)
     data += struct.pack('!f', y)
+    r, g, b = color
+    data += struct.pack('!B', r)
+    data += struct.pack('!B', g)
+    data += struct.pack('!B', b)
     return data
 
 
@@ -403,10 +407,15 @@ def __snake_change_angle_parser(data):
 
 def __orb_new_parser(data):
     kwargs = {}
-    kwargs['id'] = data[:32]
-    kwargs['mass'] = struct.unpack('!b', data[32:33])[0]
-    kwargs['x'] = struct.unpack('!f', data[33:37])[0]
-    kwargs['y'] = struct.unpack('!f', data[37:41])[0]
+    kwargs['id'] = data[:KEY_SIZE]
+    data = data[KEY_SIZE:]
+    kwargs['mass'] = struct.unpack('!B', data[:1])[0]
+    kwargs['x'] = struct.unpack('!f', data[1:5])[0]
+    kwargs['y'] = struct.unpack('!f', data[5:9])[0]
+    r = struct.unpack('!B', data[9:10])[0]
+    g = struct.unpack('!B', data[10:11])[0]
+    b = struct.unpack('!B', data[11:12])[0]
+    kwargs['color'] = (r, g, b)
     return kwargs
 
 

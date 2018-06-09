@@ -37,6 +37,7 @@ class ControlScreen(elements.Screen):
                     return
 
             self.game = GameWindow(w, h, ip, name)
+            self.game.game_start_sub.cancel_button.fnc = game_exit
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
@@ -48,10 +49,17 @@ class ControlScreen(elements.Screen):
             # os.system(r"start /wait cmd /c python .\connection\server.py")
             name = self.main_win.inputbox.text
             self.game = GameWindow(w, h, '127.0.0.1', name)
+            self.game.game_start_sub.cancel_button.fnc = game_exit
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
+        def game_exit():
+            self.game.close()
+            self.game = None
+            self.set_actives(self.main_win)
+
         # create subwindows
+        self.game = None
         self.main_win = PrimaryScreen(w, h)
         self.multiplayer_join = MultiplayerConnection(w, h)
 
@@ -474,8 +482,8 @@ class GameGUI(elements.Screen):
     def __init__(self, w, h):
         self.info_container = elements.Container(0.006 * w, 0.0085 * h,
                                                  0.12 * w, 0.03 * h,
-                                                 color=colors.GRAY235,
-                                                 border_color=colors.GRAY173,
+                                                 color=colors.GRAY173,
+                                                 border_color=colors.GRAY235,
                                                  border_size=0.001852 * h)
 
         self.player_info = elements.Text(0.01 * w, 0.0085 * h, '',
@@ -572,7 +580,7 @@ class GameStartSubwindow(elements.Screen):
 
         # set event handling
         self.join_button.need_events = True
-        # self.cancel_button.need_events = True
+        self.cancel_button.need_events = True
 
         # initialize variables
         super(GameStartSubwindow, self).__init__()

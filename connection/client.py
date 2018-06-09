@@ -104,7 +104,7 @@ class Client(object):
 
             elif data['type'] == protocol.Type.ORB and \
                     data['subtype'] == protocol.Subtype.ORB.new:
-                orb = game.objects.Orb(game.objects.Point(data['x'], data['y']), data['mass'], (25, 178, 2))
+                orb = game.objects.Orb(game.objects.Point(data['x'], data['y']), data['mass'], data['color'])
                 self.orbs[data['id']] = orb
 
             elif data['type'] == protocol.Type.ORB and \

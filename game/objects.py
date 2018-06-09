@@ -1,4 +1,5 @@
 import math
+import random
 
 import numpy as np
 import pygame
@@ -354,13 +355,13 @@ class Orb(Circle):
     [summary]
     """
 
-    MIN_MASS = 20
+    MIN_MASS = 50
     MAX_MASS = 150
 
-    MIN_RADIUS = 2
+    MIN_RADIUS = 4
     MAX_RADIUS = 8
 
-    ORB_COLORS = [
+    COLORS = [
         colors.RED,
         colors.PURPLE,
         colors.ORANGE,
@@ -368,7 +369,7 @@ class Orb(Circle):
         colors.LIGHT_ARMY_GREEN
     ]
 
-    def __init__(self, center, mass, color):
+    def __init__(self, center, mass=None, color=None):
         """
         [summary]
 
@@ -379,13 +380,14 @@ class Orb(Circle):
             color {[type]} -- [description]
         """
 
-        radius = int(round(functions.map_range(
-            mass, (Orb.MIN_MASS, Orb.MAX_MASS), (Orb.MIN_RADIUS, Orb.MAX_RADIUS))))
+        self.color = color or random.choice(Orb.COLORS)
+        self.mass = mass or random.choice(range(Orb.MIN_MASS, Orb.MAX_MASS, 10))
+
+        radius = int(round(functions.map_range(self.mass,
+                                               (Orb.MIN_MASS, Orb.MAX_MASS),
+                                               (Orb.MIN_RADIUS, Orb.MAX_RADIUS))))
 
         super(Orb, self).__init__(center, radius)
-
-        self.mass = mass
-        self.color = color
 
     def render(self, surface, scale=1, xoff=0, yoff=0):
         location_vector = np.array(self.point.pos)
