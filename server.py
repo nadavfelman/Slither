@@ -6,7 +6,7 @@ import pygame
 import math
 import random
 
-ANGLE_LIM = math.pi * 0.04
+ANGLE_LIM = math.pi * 0.02
 
 clients = {}
 clientsLock = threading.Lock()
@@ -113,7 +113,7 @@ class ClientConnection(threading.Thread):
 
         # close the communication with the client
         # clean all the variables and data of the client
-        print 'Client Disonnected. address: {}'.format(self.client_addr)
+        print 'Client Disconnected. address: {}'.format(self.client_addr)
         with clientsLock:
             del clients[self.key]
 
