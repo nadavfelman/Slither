@@ -71,7 +71,7 @@ class ClientConnection(threading.Thread):
         - infinite loop
         - has timeout
         """
-        self.client_socket.settimeout(0.01)
+        self.client_socket.settimeout(0.001)
 
         while True:
             try:

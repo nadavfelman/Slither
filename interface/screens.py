@@ -449,7 +449,6 @@ class GameWindow(elements.Screen):
         self.client.need_update = True
 
         # set event handling
-        self.client.need_events = False
 
         # set closing
         self.client.need_closing = True
@@ -467,10 +466,8 @@ class GameWindow(elements.Screen):
     def update(self):
         if self.client.key not in self.client.snakes:
             self.set_actives(self.game_start_sub)
-            self.client.need_events = False
         else:
             self.set_actives(self.game_gui)
-            self.client.need_events = True
         super(GameWindow, self).update()
 
 
@@ -482,8 +479,8 @@ class GameGUI(elements.Screen):
     def __init__(self, w, h):
         self.info_container = elements.Container(0.006 * w, 0.0085 * h,
                                                  0.12 * w, 0.03 * h,
-                                                 color=colors.GRAY173,
-                                                 border_color=colors.GRAY235,
+                                                 color=colors.GRAY235,
+                                                 border_color=colors.GRAY173,
                                                  border_size=0.001852 * h)
 
         self.player_info = elements.Text(0.01 * w, 0.0085 * h, '',

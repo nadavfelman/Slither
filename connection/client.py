@@ -32,6 +32,7 @@ class Client(object):
 
         # initial connection
         self.sock.connect((ip, protocol.PORT))
+        self.sock.settimeout(None)
 
         # get server initial
         while True:
@@ -47,17 +48,7 @@ class Client(object):
         protocol.send_data(self.sock, protocol.initial_client(name))
 
         # end init function and add timeout
-        self.sock.settimeout(0.01)
-
-    def handle_event(self, event):
-        return
-        if event.type == pygame.MOUSEMOTION:
-            cx, cy = pygame.display.get_surface().get_rect().center
-            px, py = event.pos
-            dx = px - cx
-            dy = py - cy
-            angle = atan2(dy, dx)
-            protocol.send_data(self.sock, protocol.snake_change_angle(angle))
+        self.sock.settimeout(0.001)
 
     def update(self):
         self.update_angle()
@@ -73,6 +64,7 @@ class Client(object):
         protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update_data(self):
+        count = 0
         while True:
             try:
                 data = protocol.recv_data(self.sock)
@@ -82,7 +74,10 @@ class Client(object):
             data = protocol.parse(data)
             if data['type'] == protocol.Type.CONTROL and \
                     data['subtype'] == protocol.Subtype.CONTROL.stream_end:
-                break
+                if count == 0:
+                    count += 1
+                else:
+                    break
 
             elif data['type'] == protocol.Type.SNAKE and \
                     data['subtype'] == protocol.Subtype.SNAKE.new:
