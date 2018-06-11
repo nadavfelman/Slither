@@ -46,12 +46,12 @@ class ServerDataBase(object):
         self.control.append(data)
 
     def snake_drop(self, snake):
-        print 'snake drop'
         value = snake.mass / snake.length
-        print value
         for section in snake.tail + [snake.head]:
-            orb = objects.Orb(section.point.copy(), value)
-            print section.point.copy()
+            point = section.point.copy()
+            point.x += random.randint(0, 12)
+            point.y += random.randint(0, 12)
+            orb = objects.Orb(point, value)
             key = protocol.key(orb)
             self.add_orb(key, orb)
 
