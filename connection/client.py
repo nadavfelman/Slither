@@ -42,7 +42,7 @@ class Client(object):
                 self.board = pygame.Rect(0, 0, data['width'], data['height'])
                 self.key = data['id']
                 break
-        self.render_control = game.render.render(self.display, self.board, self.snakes, self.orbs)
+        self.render_control = game.render.Render(self.display, self.board, self.snakes, self.orbs)
 
         # send client initial
         protocol.send_data(self.sock, protocol.initial_client(name))

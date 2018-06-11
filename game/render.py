@@ -2,12 +2,19 @@ import pygame
 import interface.colors as colors
 import assets
 
+
 class Rect(object):
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
+    def __init__(self, x, y, width, height, center=False):
         self.width = width
         self.height = height
+        if not center:
+            self.x = x
+            self.y = y
+        else:
+            self.center = (x, y)
+
+    def __str__(self):
+        return 'Rect{{x: {}, y: {}, width: {}, height: {}}}'.format(self.x, self.y, self.width, self.height)
 
     @property
     def center(self):
@@ -43,11 +50,30 @@ class Rect(object):
     def right(self, right):
         self.y = right - self.width
 
-    def __str__(self):
-        return 'Rect{{x: {}, y: {}, width: {}, height: {}}}'.format(self.x, self.y, self.width, self.height)
+    @property
+    def top(self):
+        return self.y
+
+    @top.setter
+    def top(self, top):
+        self.y = top
+
+    @property
+    def left(self):
+        return self.x
+
+    @left.setter
+    def left(self, left):
+        self.x = left
+
+    def intersects(self, rect):
+        return not (rect.left > self.right or
+                    rect.right < self.left or
+                    rect.top > self.bottom or
+                    rect.bottom < self.top)
 
 
-class render(object):
+class Render(object):
     """
     [summary]  
     """
@@ -90,19 +116,17 @@ class render(object):
         self.render_snakes(surface, xoff, yoff)
 
     def render_snakes(self, surface, xoff, yoff):
-        player_x, player_y = self.camera_rect.center
         for snake in self.snakes.itervalues():
-            obj_x, obj_y = snake.head.point.pos
-            dx, dy = player_x - obj_x, player_y - obj_y
-            if (dx ** 2 + dy ** 2) ** 0.5 < self.display_rect.width:
-                snake.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
+            for section in snake.tail + [snake.head]:
+                rect = Rect(section.point.x, section.point.y, section.radius * 2, section.radius * 2, center=True)
+                if rect.intersects(self.camera_rect):
+                    snake.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
+                    break
 
     def render_orbs(self, surface, xoff, yoff):
-        player_x, player_y = self.camera_rect.center
         for orb in self.orbs.itervalues():
-            obj_x, obj_y = orb.point.x, orb.point.y
-            dx, dy = player_x - obj_x, player_y - obj_y
-            if (dx ** 2 + dy ** 2) ** 0.5 < self.display_rect.width:
+            rect = Rect(orb.point.x, orb.point.y, orb.radius * 2, orb.radius * 2, center=True)
+            if rect.intersects(self.camera_rect):
                 orb.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
 
     def render_background(self, surface, xoff, yoff):
