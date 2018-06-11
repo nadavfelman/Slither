@@ -386,6 +386,7 @@ class Orb(Circle):
         radius = int(round(functions.map_range(self.mass,
                                                (Orb.MIN_MASS, Orb.MAX_MASS),
                                                (Orb.MIN_RADIUS, Orb.MAX_RADIUS))))
+        radius = functions.constraint(radius, Orb.MIN_RADIUS, Orb.MAX_RADIUS)
 
         super(Orb, self).__init__(center, radius)
 

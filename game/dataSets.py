@@ -45,6 +45,16 @@ class ServerDataBase(object):
         data = protocol.orb_delete(id_)
         self.control.append(data)
 
+    def snake_drop(self, snake):
+        print 'snake drop'
+        value = snake.mass / snake.length
+        print value
+        for section in snake.tail + [snake.head]:
+            orb = objects.Orb(section.point.copy(), value)
+            print section.point.copy()
+            key = protocol.key(orb)
+            self.add_orb(key, orb)
+
     def update(self):
         self.last_update = []
         quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx, self.board.centery, self.board.width / 2, self.board.height / 2), 5)
@@ -84,11 +94,13 @@ class ServerDataBase(object):
                 if key != other_key:
                     if other_snake.any_collide(snake.head):
                         self.del_snake(key)
+                        self.snake_drop(snake)
 
     def border_collision(self):
         for key, snake in self.snakes.items():
             if snake.boarders_collide(self.board):
                 self.del_snake(key)
+                self.snake_drop(snake)
 
     def add_orbs(self):
         while len(self.orbs) < ServerDataBase.ORB_LIMIT:
