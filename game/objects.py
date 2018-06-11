@@ -43,7 +43,7 @@ class Circle(object):
     def __repr__(self):
         return self.__str__()
 
-    def collide(self, other):
+    def intersects(self, other):
         dx = self.point.x - other.point.x
         dy = self.point.y - other.point.y
         distance = (dx ** 2 + dy ** 2) ** 0.5
@@ -329,11 +329,11 @@ class PlayerSnake(Snake):
 
     def tail_collide(self, circle):
         for t in self.tail:
-            if t.collide(circle):
+            if t.intersects(circle):
                 return True
 
     def head_collide(self, circle):
-        return self.head.collide(circle)
+        return self.head.intersects(circle)
 
     def any_collide(self, circle):
         return self.tail_collide(circle) or self.head_collide(circle)

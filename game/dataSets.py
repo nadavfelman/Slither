@@ -84,7 +84,7 @@ class ServerDataBase(object):
                         continue
 
                     orb = self.orbs[key]
-                    if sector.collide(orb):
+                    if sector.intersects(orb):
                         self.del_orb(key)
                         snake.mass += orb.mass
 

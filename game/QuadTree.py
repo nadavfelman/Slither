@@ -42,7 +42,7 @@ class QuadTree(object):
         self.south_east_QT = None
 
     def insert(self, point):
-        if not self.rect.collide(point):
+        if not self.rect.intersects(point):
             return False
 
         if len(self.points) < self.capacity:
@@ -84,7 +84,7 @@ class QuadTree(object):
     def qurey(self, rect):
         found_points = []
         if self.rect.intersects(rect):
-            found_points.extend(filter(lambda p: rect.collide(p), self.points))
+            found_points.extend(filter(lambda p: rect.intersects(p), self.points))
             if self.divided:
                 found_points.extend(self.north_west_QT.qurey(rect))
                 found_points.extend(self.north_east_QT.qurey(rect))
