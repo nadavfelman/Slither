@@ -1,12 +1,14 @@
-import elements
-import assets
-import colors
-import ctrlVars
-import connection
 import re
 import subprocess
 import time
+
 import pygame
+
+import assets
+import colors
+import connection
+import ctrlVars
+import elements
 
 
 class ControlScreen(elements.Screen):
@@ -15,18 +17,56 @@ class ControlScreen(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the functions
+        """
+        makes new Control Screen.
+        Control Screen is used to manage the graphic and the logical side of the program.
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
+
+        # create buttons` functions
         def multiplayer_win_join_button():
+            """
+            this function is used by multiplayer info window to change the screen to the multiplayer join window.
+
+            Returns:
+                None
+            """
             self.set_actives(self.multiplayer_join)
 
         def multiplayer_join_cancel_button():
+            """
+            this function is used by multiplayer join window to change the screen back to main menu.
+
+            Returns:
+                None
+            """
             self.set_actives(self.main_win)
 
         def multiplayer_join_join_button():
+            """
+            this function is used by multiplayer join window tjoin button to join a server with given IP.
+            the IP is given by the user through the input box and is taken from there.
+            the IP should be a valid IPv4, in the format of xxx.xxx.xxx.xxx.
+            the special "localhost" keyword also can be used.
+            invalid IP will not pass and no connection will be tried.
+
+            Returns:
+                None
+            """
+            # get the name of the player from the "nickname" input box. this is used in the connection process.
             name = self.main_win.inputbox.text
+            # get the ip of the server
             ip = self.multiplayer_join.inputbox.text
 
+            # if the ip is the "localhost" keyword try to connect.
             if ip != 'localhost':
+                # if the ip is not local host
+                # ensure that the ip has four section
+                # ensure that the ip has only numbers in the sections
+                # and ensure that the numbers in the sections are between 0 to 255 (includes).
                 match = re.match(r'(\d{1,3}\.){3}\d{1,3}', ip)
                 if not match:
                     return
@@ -36,33 +76,70 @@ class ControlScreen(elements.Screen):
                 if not valid:
                     return
 
+            # if the ip is valid try to connect to it and start the game
+            # TODO: add try add expect to ensure successful connection
             self.game = GameWindow(w, h, ip, name)
             self.game.game_start_sub.cancel_button.fnc = game_exit
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
         def singleplayer_join():
+            """
+            this function is used by singleplayer start button to start singleplayer game.
+            currently this starts a server on the local computer and connects to it.
+            other people can join too.
+
+            Returns:
+                None
+            """
+            # start the server
             subprocess.Popen(['start', 'cmd', '/c', 'python', '.\server.py'],
                              shell=True, stdin=None, stdout=None,
                              stderr=None, close_fds=True)
+            # use sleep to make sure the server had enough time to start.
             time.sleep(1.6)
-            # os.system(r"start /wait cmd /c python .\connection\server.py")
+
+            # get the name of the player from the "nickname" input box. this is used in the connection process.
             name = self.main_win.inputbox.text
-            self.game = GameWindow(w, h, '127.0.0.1', name)
+            # use "localhost" as the server ip
+            ip = 'localhost'
+
+            # if the ip is valid try to connect to it and start the game
+            # TODO: add try add expect to ensure successful connection
+            self.game = GameWindow(w, h, ip, name)
             self.game.game_start_sub.cancel_button.fnc = game_exit
             self.windows_objs.append(self.game)
             self.set_actives(self.game)
 
         def game_exit():
+            """
+            this function is used by the game sub window to stop the game and go back to main menu.
+            this includes: disconnecting from the server and closing the socket.
+
+            Returns:
+                None
+            """
             self.game.close()
             self.game = None
             self.set_actives(self.main_win)
+
+        # create screen elements
+
+        # set rerendering
+
+        # set update
+
+        # set event handling
+
+        # set closing
 
         # create subwindows
         self.game = None
         self.main_win = PrimaryScreen(w, h)
         self.multiplayer_join = MultiplayerConnection(w, h)
 
+        # assign buttons their function
+        # this is needed when a button need to change a variable out of its reach (does not exits in the button world)
         self.main_win.multiplayer_win.start_button.fnc = multiplayer_win_join_button
         self.multiplayer_join.cancel_button.fnc = multiplayer_join_cancel_button
         self.multiplayer_join.join_button.fnc = multiplayer_join_join_button
@@ -71,9 +148,13 @@ class ControlScreen(elements.Screen):
         # initialize variables
         super(ControlScreen, self).__init__()
 
+        # add screen elements to the elements array
+
+        # add sub windows to windows array
         self.windows_objs.append(self.main_win)
         self.windows_objs.append(self.multiplayer_join)
 
+        # set active sub windows
         self.set_actives(self.main_win)
 
     def multiplayer_win_join_button(self):
@@ -86,7 +167,7 @@ class PrimaryScreen(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the functions
+        # create buttons` functions
         def stop_running():
             ctrlVars.running = False
 
@@ -96,7 +177,7 @@ class PrimaryScreen(elements.Screen):
         def show_multiplayer_win():
             self.set_actives(self.multiplayer_win)
 
-        # create the elements
+        # create screen elements
         self.background = elements.Image(0, 0, assets.primary_bg,
                                          scale=w / 1920.0)
 
@@ -170,13 +251,18 @@ class PrimaryScreen(elements.Screen):
         self.button_exit.need_events = True
         self.inputbox.need_events = True
 
+        # set closing
+
         # create subwindows
         self.singleplayer_win = SingleplayerInfo(w, h)
         self.multiplayer_win = MultiplayerInfo(w, h)
 
+        # assign buttons their function
+
         # initialize variables
         super(PrimaryScreen, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.background)
         self.elements_objs.append(self.buttons_container)
         self.elements_objs.append(self.button_singleplayer)
@@ -186,9 +272,11 @@ class PrimaryScreen(elements.Screen):
         self.elements_objs.append(self.game_text)
         self.elements_objs.append(self.name_text)
 
+        # add sub windows to windows array
         self.windows_objs.append(self.singleplayer_win)
         self.windows_objs.append(self.multiplayer_win)
 
+        # set active sub windows
         self.set_actives()
 
 
@@ -200,7 +288,9 @@ class SingleplayerInfo(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the elements
+        # create buttons` functions
+
+        # create screen elements
         self.container = elements.Container(0.338541 * w, 0.372222 * h,
                                             0.625 * w, 0.447222 * h,
                                             color=colors.GRAY235,
@@ -241,14 +331,25 @@ class SingleplayerInfo(elements.Screen):
         # set event handling
         self.start_button.need_events = True
 
+        # set closing
+
+        # create subwindows
+
+        # assign buttons their function
+
         # initialize variables
         super(SingleplayerInfo, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.line)
         self.elements_objs.append(self.title)
         self.elements_objs.append(self.text)
         self.elements_objs.append(self.start_button)
+
+        # add sub windows to windows array
+
+        # set active sub windows
 
 
 class MultiplayerInfo(elements.Screen):
@@ -257,7 +358,9 @@ class MultiplayerInfo(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the elements
+        # create buttons` functions
+
+        # create screen elements
         self.container = elements.Container(0.338541 * w, 0.372222 * h,
                                             0.625 * w, 0.447222 * h,
                                             color=colors.GRAY235,
@@ -298,14 +401,25 @@ class MultiplayerInfo(elements.Screen):
         # set event handling
         self.start_button.need_events = True
 
+        # set closing
+
+        # create subwindows
+
+        # assign buttons their function
+
         # initialize variables
         super(MultiplayerInfo, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.line)
         self.elements_objs.append(self.title)
         self.elements_objs.append(self.text)
         self.elements_objs.append(self.start_button)
+
+        # add sub windows to windows array
+
+        # set active sub windows
 
 
 class MultiplayerConnection(elements.Screen):
@@ -314,7 +428,9 @@ class MultiplayerConnection(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the elements
+        # create buttons` functions
+
+        # create screen elements
         self.background = elements.Image(0, 0, assets.primary_bg,
                                          scale=w / 1920.0)
 
@@ -383,9 +499,16 @@ class MultiplayerConnection(elements.Screen):
         self.cancel_button.need_events = True
         self.inputbox.need_events = True
 
+        # set closing
+
+        # create subwindows
+
+        # assign buttons their function
+
         # initialize variables
         super(MultiplayerConnection, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.background)
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.title)
@@ -394,6 +517,10 @@ class MultiplayerConnection(elements.Screen):
         self.elements_objs.append(self.inputbox)
         self.elements_objs.append(self.join_button)
         self.elements_objs.append(self.cancel_button)
+
+        # add sub windows to windows array
+
+        # set active sub windows
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -405,13 +532,12 @@ class MultiplayerConnection(elements.Screen):
 
 
 class GameWindow(elements.Screen):
-    """[summary]
-    
-    Arguments:
-        elements {[type]} -- [description]
+    """
+
     """
 
     def __init__(self, w, h, ip, name):
+        # create buttons` functions
         def info_update():
             player = self.client.get_player()
             if player:
@@ -434,13 +560,8 @@ class GameWindow(elements.Screen):
 
             self.game_gui.leaderboard.text = string
 
+        # create screen elements
         self.client = connection.client.Client(ip, name)
-        self.game_gui = GameGUI(w, h)
-        self.game_start_sub = GameStartSubwindow(w, h)
-
-        self.game_gui.player_info.update = info_update
-        self.game_gui.leaderboard.update = leaderboard_update
-        self.game_start_sub.join_button.fnc = self.client.start_game
 
         # set rerendering
         self.client.need_rerender = True
@@ -453,14 +574,26 @@ class GameWindow(elements.Screen):
         # set closing
         self.client.need_closing = True
 
+        # create subwindows
+        self.game_gui = GameGUI(w, h)
+        self.game_start_sub = GameStartSubwindow(w, h)
+
+        # assign buttons their function
+        self.game_gui.player_info.update = info_update
+        self.game_gui.leaderboard.update = leaderboard_update
+        self.game_start_sub.join_button.fnc = self.client.start_game
+
         # initialize variables
         super(GameWindow, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.client)
 
+        # add sub windows to windows array
         self.windows_objs.append(self.game_gui)
         self.windows_objs.append(self.game_start_sub)
 
+        # set active sub windows
         self.set_actives(self.game_start_sub)
 
     def update(self):
@@ -477,6 +610,9 @@ class GameGUI(elements.Screen):
     """
 
     def __init__(self, w, h):
+        # create buttons` functions
+
+        # create screen elements
         self.info_container = elements.Container(0.006 * w, 0.0085 * h,
                                                  0.12 * w, 0.03 * h,
                                                  color=colors.GRAY235,
@@ -511,13 +647,22 @@ class GameGUI(elements.Screen):
 
         # set closing
 
+        # create subwindows
+
+        # assign buttons their function
+
         # initialize variables
         super(GameGUI, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.leaderboard_container)
         self.elements_objs.append(self.info_container)
         self.elements_objs.append(self.player_info)
         self.elements_objs.append(self.leaderboard)
+
+        # add sub windows to windows array
+
+        # set active sub windows
 
 
 class GameStartSubwindow(elements.Screen):
@@ -526,7 +671,9 @@ class GameStartSubwindow(elements.Screen):
     """
 
     def __init__(self, w, h):
-        # create the elements
+        # create buttons` functions
+
+        # create screen elements
         self.container = elements.Container(0.180729 * w, 0.312963 * h,
                                             0.625000 * w, 0.375000 * h,
                                             color=colors.GRAY235,
@@ -579,12 +726,23 @@ class GameStartSubwindow(elements.Screen):
         self.join_button.need_events = True
         self.cancel_button.need_events = True
 
+        # set closing
+
+        # create subwindows
+
+        # assign buttons their function
+
         # initialize variables
         super(GameStartSubwindow, self).__init__()
 
+        # add screen elements to the elements array
         self.elements_objs.append(self.container)
         self.elements_objs.append(self.title)
         self.elements_objs.append(self.line)
         self.elements_objs.append(self.text)
         self.elements_objs.append(self.join_button)
         self.elements_objs.append(self.cancel_button)
+
+        # add sub windows to windows array
+
+        # set active sub windows

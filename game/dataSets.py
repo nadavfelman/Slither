@@ -46,7 +46,7 @@ class ServerDataBase(object):
         self.control.append(data)
 
     def snake_drop(self, snake):
-        value = snake.mass / snake.length
+        value = snake.mass * 0.6 / snake.length
         for section in snake.tail + [snake.head]:
             point = section.point.copy()
             point.x += random.randint(0, 12)

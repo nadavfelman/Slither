@@ -332,7 +332,22 @@ class Line(BaseElement):
 
 class Screen(object):
     """
-    [summary]
+    this serves as the base to screens objects.
+    this adds the functionality to the screens.
+
+    when inheriting needed actions to make:
+        # create buttons` functions
+        # create screen elements
+        # set rerendering
+        # set update
+        # set event handling
+        # set closing
+        # create subwindows
+        # assign buttons their function
+        # initialize variables
+        # add screen elements to the elements array
+        # add sub windows to windows array
+        # set active sub windows
     """
 
     def __init__(self):
