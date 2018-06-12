@@ -157,9 +157,6 @@ class ControlScreen(elements.Screen):
         # set active sub windows
         self.set_actives(self.main_win)
 
-    def multiplayer_win_join_button(self):
-        self.set_actives(self.multiplayer_join)
-
 
 class PrimaryScreen(elements.Screen):
     """
