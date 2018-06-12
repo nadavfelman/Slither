@@ -157,6 +157,13 @@ class ControlScreen(elements.Screen):
         # set active sub windows
         self.set_actives(self.main_win)
 
+    def handle_event(self, event):
+        if self.game and not self.game.game_start_sub.active:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.game.game_start_sub.cancel_button.fnc()
+        super(ControlScreen, self).handle_event(event)
+
 
 class PrimaryScreen(elements.Screen):
     """
