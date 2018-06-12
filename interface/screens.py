@@ -140,9 +140,10 @@ class ControlScreen(elements.Screen):
 
         # assign buttons their function
         # this is needed when a button need to change a variable out of its reach (does not exits in the button world)
-        self.main_win.multiplayer_win.start_button.fnc = multiplayer_win_join_button
+        self.main_win.multiplayer_win.connect_button.fnc = multiplayer_win_join_button
         self.multiplayer_join.cancel_button.fnc = multiplayer_join_cancel_button
         self.multiplayer_join.join_button.fnc = multiplayer_join_join_button
+        self.main_win.multiplayer_win.start_button.fnc = singleplayer_join
         self.main_win.singleplayer_win.start_button.fnc = singleplayer_join
 
         # initialize variables
@@ -313,7 +314,7 @@ class SingleplayerInfo(elements.Screen):
                                   colors.GRAY92)
 
         self.start_button = elements.Button(0.348958 * w, 0.731481 * h,
-                                            0.270833 * w, 0.070370 * h,
+                                            0.296875 * w, 0.070370 * h,
                                             text='start',
                                             text_color=colors.GRAY92,
                                             regular=colors.GREEN_FL,
@@ -383,8 +384,8 @@ class MultiplayerInfo(elements.Screen):
                                   colors.GRAY92)
 
         self.start_button = elements.Button(0.348958 * w, 0.731481 * h,
-                                            0.270833 * w, 0.070370 * h,
-                                            text='connect',
+                                            0.296875 * w, 0.070370 * h,
+                                            text='start',
                                             text_color=colors.GRAY92,
                                             regular=colors.GREEN_FL,
                                             hover=colors.GREEN_FLST,
@@ -392,17 +393,29 @@ class MultiplayerInfo(elements.Screen):
                                             font_name=assets.Font_Segoe_UI_Light,
                                             font_size=0.050926 * h)
 
+        self.connect_button = elements.Button(0.656250 * w, 0.731481 * h,
+                                              0.296875 * w, 0.070370 * h,
+                                              text='connect',
+                                              text_color=colors.GRAY92,
+                                              regular=colors.GREEN_FL,
+                                              hover=colors.GREEN_FLST,
+                                              click=colors.GREEN_FLSTDE,
+                                              font_name=assets.Font_Segoe_UI_Light,
+                                              font_size=0.050926 * h)
+
         self.line = elements.Line(0.348958 * w, 0.46 * h, 0.947917 * w,
                                   0.46 * h,
                                   width=0.001852 * h,
                                   color=colors.GRAY173)
 
         # set rerendering
+        self.connect_button.need_rerender = True
         self.start_button.need_rerender = True
 
         # set update
 
         # set event handling
+        self.connect_button.need_events = True
         self.start_button.need_events = True
 
         # set closing
@@ -419,6 +432,7 @@ class MultiplayerInfo(elements.Screen):
         self.elements_objs.append(self.line)
         self.elements_objs.append(self.title)
         self.elements_objs.append(self.text)
+        self.elements_objs.append(self.connect_button)
         self.elements_objs.append(self.start_button)
 
         # add sub windows to windows array
