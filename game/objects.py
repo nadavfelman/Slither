@@ -118,6 +118,7 @@ class Snake(object):
     DEFAULT_MASS = 150
     DEFAULT_HEAD_COLOR = colors.RED
     DEFAULT_TAIL_COLOR = colors.GRAY66
+    DEFAULT_RADIUS = 10
 
     # name variables
     NAME_FONT_SIZE = 20
@@ -149,17 +150,11 @@ class Snake(object):
 
     @property
     def radius(self):
-        return 10
-        # return self.mass / 3000 + 10
-
-    @property
-    def distance(self):
-        raise NotImplemented('distance should not be used in snake')
-        # return self.mass / 4500 + 3
+        return Snake.DEFAULT_RADIUS
 
     @property
     def length(self):
-        return self.mass / 100 + 10
+        return int(self.mass / 100 + 10)
 
     @property
     def location(self):
@@ -175,7 +170,7 @@ class Snake(object):
 
     @mass.setter
     def mass(self, mass):
-        self._mass = mass
+        self._mass = int(mass)
         self.update_length()
 
     def update_length(self):
@@ -381,7 +376,7 @@ class Orb(Circle):
         """
 
         self.color = color or random.choice(Orb.COLORS)
-        self.mass = mass or random.choice(range(Orb.MIN_MASS, Orb.MAX_MASS, 10))
+        self.mass = mass or random.choice(range(Orb.MIN_MASS, Orb.MAX_MASS + 1, 10))
 
         radius = int(round(functions.map_range(self.mass,
                                                (Orb.MIN_MASS, Orb.MAX_MASS),
