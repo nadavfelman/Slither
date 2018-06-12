@@ -11,7 +11,7 @@ class ServerDataBase(object):
 
     """
 
-    ORB_LIMIT = 200
+    ORB_LIMIT = 350
 
     def __init__(self):
         """

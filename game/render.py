@@ -91,27 +91,19 @@ class Render(object):
         self.snakes = snakes
         self.orbs = orbs
         self.player = None
-        self.zoom = 1
-
-    def set_zoom(self, zoom):
-        self.zoom = zoom
-        # width = self.display_rect.width / zoom
-        # height = self.display_rect.height / zoom
-        # self.camera_rect.size = (width, height)
 
     def get_offsets(self):
         x, y = self.camera_rect.center
-        xoff = (-x + self.display_rect.width / 2.0) * self.zoom
-        yoff = (-y + self.display_rect.height / 2.0) * self.zoom
+        xoff = -x + self.display_rect.width / 2.0
+        yoff = -y + self.display_rect.height / 2.0
         return xoff, yoff
 
     def render(self, surface):
         if self.player:
             self.camera_rect.center = self.player.location
-            # self.set_zoom(self.display_rect.height * .03 / self.player.radius + 1)
 
         xoff, yoff = self.get_offsets()
-        self.render_background(surface, xoff, yoff)
+        self.render_background(surface)
         self.render_orbs(surface, xoff, yoff)
         self.render_snakes(surface, xoff, yoff)
 
@@ -120,16 +112,16 @@ class Render(object):
             for section in snake.tail + [snake.head]:
                 rect = Rect(section.point.x, section.point.y, section.radius * 2, section.radius * 2, center=True)
                 if rect.intersects(self.camera_rect):
-                    snake.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
+                    snake.render(surface, xoff=xoff, yoff=yoff)
                     break
 
     def render_orbs(self, surface, xoff, yoff):
         for orb in self.orbs.itervalues():
             rect = Rect(orb.point.x, orb.point.y, orb.radius * 2, orb.radius * 2, center=True)
             if rect.intersects(self.camera_rect):
-                orb.render(surface, scale=self.zoom, xoff=xoff, yoff=yoff)
+                orb.render(surface, xoff=xoff, yoff=yoff)
 
-    def render_background(self, surface, xoff, yoff):
+    def render_background(self, surface):
         surface.fill(colors.DEAD_RED)
         x = -self.camera_rect.x if self.camera_rect.x < 0 else 0
         y = -self.camera_rect.y if self.camera_rect.y < 0 else 0
