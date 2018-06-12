@@ -10,7 +10,7 @@ This is multiplayer and can be played with other people. <br>
 - [x] <s>Randomize orb size and colors</s>
 - [x] <s>Fix exit button</s>
 - [ ] Remake game connection on client side (game screen)
-- [ ] Add ESCAPE button press to exit running game
-- [ ] Change main menu:
-  - add multiplayer start locally option (functionality of current singleplayer)
-  - change current singleplayer or stop it function
+- [x] <s>Add ESCAPE button press to exit running game</s> (code should be changed)
+- [x] <s>Change main menu:</s>
+  - [x] <s>add multiplayer start locally option (functionality of current singleplayer)</s>
+  - [x] <s>change current singleplayer or stop it function</s>
