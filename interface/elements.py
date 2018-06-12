@@ -358,6 +358,9 @@ class Screen(object):
         self.active = True
 
     def render(self, surface):
+        if not self.active:
+            return
+
         if self.next_render_full:
             self.full_render(surface)
             self.next_render_full = False
@@ -374,9 +377,8 @@ class Screen(object):
             element.render(surface)
 
         for window in self.windows_objs:
-            if window.active:
-                window.next_render_full = True
-                window.render(surface)
+            window.next_render_full = True
+            window.render(surface)
 
     def partial_render(self, surface):
         # stack = inspect.stack()
@@ -389,35 +391,29 @@ class Screen(object):
                 element.render(surface)
 
         for window in self.windows_objs:
-            if window.active:
-                window.render(surface)
+            window.render(surface)
 
     def update(self):
+        if not self.active:
+            return
+
         for element in self.elements_objs:
             if getattr(element, 'need_update', None):
                 element.update()
 
         for window in self.windows_objs:
-            if window.active:
-                window.update()
+            window.update()
 
     def handle_event(self, event):
+        if not self.active:
+            return
+
         for element in self.elements_objs:
             if getattr(element, 'need_events', None):
                 element.handle_event(event)
 
         for window in self.windows_objs:
-            if window.active:
-                window.handle_event(event)
-
-    def close(self):
-        for element in self.elements_objs:
-            if getattr(element, 'need_closing', None):
-                element.close()
-
-        for window in self.windows_objs:
-            if window.active:
-                window.close()
+            window.handle_event(event)
 
     def set_actives(self, *args):
         for window in self.windows_objs:
@@ -426,3 +422,11 @@ class Screen(object):
                 window.next_render_full = True
             else:
                 window.active = False
+
+    def close(self):
+        for element in self.elements_objs:
+            if getattr(element, 'need_closing', None):
+                element.close()
+
+        for window in self.windows_objs:
+            window.close()
