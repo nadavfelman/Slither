@@ -163,6 +163,10 @@ class Snake(object):
     def angle(self):
         return self.head.angle
 
+    @angle.setter
+    def angle(self, angle):
+        self.head.angle = angle
+
     @property
     def mass(self):
         return self._mass
@@ -173,7 +177,7 @@ class Snake(object):
         self.update_length()
 
     def update_length(self):
-        length = int(round(self.length))
+        length = int(self.length)
         dl = len(self.tail) - length
 
         if dl < 0:

@@ -98,6 +98,7 @@ class ClientConnection(threading.Thread):
                         elif data['type'] == protocol.Type.GAME and \
                                 data['subtype'] == protocol.Subtype.GAME.start:
                             snake = game.objects.PlayerSnake(game.objects.Point(random.randint(0, game_data.board.width),random.randint(0, game_data.board.height)), name)
+                            snake.angle = math.radians(random.randint(0, 360))
                             game_data.add_snake(self.key, snake)
 
                         elif data['type'] == protocol.Type.DISCONNECTION and \
