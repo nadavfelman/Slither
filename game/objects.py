@@ -1,7 +1,6 @@
 import math
 import random
 
-import numpy as np
 import pygame
 
 import functions
@@ -207,19 +206,15 @@ class Snake(object):
         self.render_name(surface, scale=scale, xoff=xoff, yoff=yoff)
 
     def render_snake(self, surface, scale=1, xoff=0, yoff=0):
-        # scale vector (for matrix or vector multiplication)
-        scale_vector = np.array([[scale, 0], [0, scale]])
         # scaled radius of the circle
         scaled_radius = int(round(self.radius * scale))
 
         # draw trail
         # matrix of all the point in the trail
-        matrix = np.array([sector.point.pos
-                           for sector in self.tail[::-1]])
-        # scaled matrix of the trail
-        scaled_matrix = np.matmul(matrix, scale_vector)
+        matrix = [sector.point.pos
+                           for sector in self.tail[::-1]]
 
-        for x, y in scaled_matrix:
+        for x, y in matrix:
             # scaled x and y of one point with the offset applied
             offsetted_x = int(round(x + xoff))
             offsetted_y = int(round(y + yoff))
@@ -229,16 +224,15 @@ class Snake(object):
             shadow_pos = (shadow_x, shadow_y)  # position of the shadow
 
             # draw the shadow of the joint
-            pygame.draw.circle(surface, Snake.SHADOW_TAIL_COLOR,
-                               shadow_pos, scaled_radius)
+            #pygame.draw.circle(surface, Snake.SHADOW_TAIL_COLOR,
+            #                   shadow_pos, scaled_radius)
             pygame.draw.circle(surface, self.tail_color, pos,
                                scaled_radius)  # draw the joint
 
         # draw head
         # vector representing the location of head
-        vector = np.array(self.head.point.pos)
-        scaled_vector = vector.dot(scale_vector)  # scaled vector of head
-        x, y = scaled_vector  # scaled x and y
+        vector = self.head.point.pos
+        x, y = vector  # scaled x and y
 
         # scaled x and y with the offset applied
         offsetted_x = int(round(x + xoff))
@@ -249,8 +243,8 @@ class Snake(object):
         shadow_pos = (shadow_x, shadow_y)  # position of the shadow
 
         # draw the shadow of the joint
-        pygame.draw.circle(surface, Snake.SHADOW_HEAD_COLOR,
-                           shadow_pos, scaled_radius)
+        # pygame.draw.circle(surface, Snake.SHADOW_HEAD_COLOR,
+        #                    shadow_pos, scaled_radius)
         pygame.draw.circle(surface, self.head_color,
                            pos, scaled_radius)  # draw the joint
 
@@ -391,11 +385,9 @@ class Orb(Circle):
         super(Orb, self).__init__(center, radius)
 
     def render(self, surface, scale=1, xoff=0, yoff=0):
-        location_vector = np.array(self.point.pos)
-        scale_vector = np.array([[scale, 0], [0, scale]])
+        location_vector = self.point.pos
 
-        scaled_vector = location_vector.dot(scale_vector)
-        x, y = scaled_vector
+        x, y = location_vector
 
         offsetted_x = int(round(x + xoff))
         offsetted_y = int(round(y + yoff))

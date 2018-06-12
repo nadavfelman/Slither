@@ -64,7 +64,8 @@ class Client(object):
         protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update_data(self):
-        count = 0
+        count = 1
+        lim = 2
         while True:
             try:
                 data = protocol.recv_data(self.sock)
@@ -74,7 +75,7 @@ class Client(object):
             data = protocol.parse(data)
             if data['type'] == protocol.Type.CONTROL and \
                     data['subtype'] == protocol.Subtype.CONTROL.stream_end:
-                if count == 0:
+                if count < lim:
                     count += 1
                 else:
                     break
