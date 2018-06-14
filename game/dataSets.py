@@ -106,17 +106,21 @@ class ServerDataBase(object):
         self.last_update = []
         orb_quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
                                                         self.board.centery, self.board.width / 2,
-                                                        self.board.height / 2), 5)
+                                                        self.board.height / 2), int(0.08 * ServerDataBase.ORB_LIMIT))
         for key, orb in self.orbs.iteritems():
             orb_quad_tree.insert(QuadTree.Point(orb.point.x, orb.point.y, key))
 
+        sections = []
+        for key, snake in self.snakes.iteritems():
+            for section in snake.tail + [snake.head]:
+                sections.append((section, key))
+
         snake_quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
                                                           self.board.centery, self.board.width / 2,
-                                                          self.board.height / 2), 5)
-        for key, snake in self.snakes.iteritems():
-            for sector in snake.tail + [snake.head]:
-                x, y = sector.point.pos
-                snake_quad_tree.insert(QuadTree.Point(x, y, key))
+                                                          self.board.height / 2), int(0.08 * len(sections)))
+        for section, key in sections:
+            x, y = section.point.pos
+            snake_quad_tree.insert(QuadTree.Point(x, y, key))
 
         self.move_snakes()
         self.orbs_collision(orb_quad_tree)
