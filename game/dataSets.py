@@ -104,14 +104,23 @@ class ServerDataBase(object):
 
         """
         self.last_update = []
-        quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
-                                                    self.board.centery, self.board.width / 2, self.board.height / 2), 5)
+        orb_quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
+                                                        self.board.centery, self.board.width / 2,
+                                                        self.board.height / 2), 5)
         for key, orb in self.orbs.iteritems():
-            quad_tree.insert(QuadTree.Point(orb.point.x, orb.point.y, key))
+            orb_quad_tree.insert(QuadTree.Point(orb.point.x, orb.point.y, key))
+
+        snake_quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
+                                                          self.board.centery, self.board.width / 2,
+                                                          self.board.height / 2), 5)
+        for key, snake in self.snakes.iteritems():
+            for sector in snake.tail + [snake.head]:
+                x, y = sector.point.pos
+                snake_quad_tree.insert(QuadTree.Point(x, y, key))
 
         self.move_snakes()
-        self.orbs_collision(quad_tree)
-        self.snakes_collision()
+        self.orbs_collision(orb_quad_tree)
+        self.snakes_collision(snake_quad_tree)
         self.border_collision()
         self.add_orbs()
 
@@ -149,18 +158,24 @@ class ServerDataBase(object):
                         self.del_orb(key)
                         snake.mass += orb.mass
 
-    def snakes_collision(self):
+    def snakes_collision(self, quad_tree):
         """
 
         Returns:
 
         """
         for key, snake in self.snakes.items():
-            for other_key, other_snake in self.snakes.items():
-                if key != other_key:
-                    if other_snake.any_collide(snake.head):
-                        self.del_snake(key)
-                        self.snake_drop(snake)
+            head = snake.head
+
+            area = QuadTree.Rect(head.point.x, head.point.y,
+                                 head.radius + objects.Orb.MAX_RADIUS,
+                                 2*head.radius)
+
+            sections = quad_tree.qurey(area)
+            other_sections = filter(lambda s: s.data != key, sections)
+            if other_sections:
+                self.del_snake(key)
+                self.snake_drop(snake)
 
     def border_collision(self):
         """
