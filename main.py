@@ -1,10 +1,11 @@
-import ctrlVars
 import pygame
+
+import ctrlVars
 import interface
 
 
 def main():
-    # pygame inizializition
+    # pygame initialization
     # display set up
     pygame.init()
     infoObject = pygame.display.Info()

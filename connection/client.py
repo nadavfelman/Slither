@@ -51,10 +51,20 @@ class Client(object):
         self.sock.settimeout(0.001)
 
     def update(self):
+        """
+
+        Returns:
+
+        """
         self.update_angle()
         self.update_data()
 
     def update_angle(self):
+        """
+
+        Returns:
+
+        """
         cx, cy = pygame.display.get_surface().get_size()
         cx, cy = cx / 2, cy / 2
         px, py = pygame.mouse.get_pos()
@@ -64,6 +74,11 @@ class Client(object):
         protocol.send_data(self.sock, protocol.snake_change_angle(angle))
 
     def update_data(self):
+        """
+
+        Returns:
+
+        """
         count = 1
         lim = 2
         while True:
@@ -108,15 +123,38 @@ class Client(object):
                 del self.orbs[data['id']]
 
     def render(self, surface):
+        """
+
+        Args:
+            surface:
+
+        Returns:
+
+        """
         self.render_control.render(surface)
 
     def close(self):
+        """
+
+        Returns:
+
+        """
         protocol.send_data(self.sock, protocol.disconnection_announce())
         self.sock.close()
 
     def get_player(self):
+        """
+
+        Returns:
+
+        """
         if self.key and self.key in self.snakes:
             return self.snakes[self.key]
 
     def start_game(self):
+        """
+
+        Returns:
+
+        """
         protocol.send_data(self.sock, protocol.game_start())

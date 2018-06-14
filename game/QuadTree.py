@@ -1,28 +1,77 @@
 class Point(object):
+    """
+
+    """
+
     def __init__(self, x, y, data=None):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            data:
+        """
         self.x = x
         self.y = y
         self.data = data
 
     def __str__(self):
-        return 'Point\{x: {}, y: {}\}'.format(self.x, self.y)
+        """
+
+        Returns:
+            str
+        """
+        return 'Point{{x: {}, y: {}}}'.format(self.x, self.y)
 
     def __repr__(self):
-        return 'Point{{x: {}, y: {}}}'.format(self.x, self.y)
+        """
+
+        Returns:
+            str
+        """
+        return self.__str__()
 
 
 class Rect(object):
+    """
+
+    """
+
     def __init__(self, x, y, w, h):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            w (int):
+            h (int):
+        """
         self.x = x
         self.y = y
         self.w = w
         self.h = h
 
     def collide(self, point):
+        """
+
+        Args:
+            point (Point):
+
+        Returns:
+            bool
+        """
         return self.x - self.w <= point.x < self.x + self.w and \
                self.y - self.h <= point.y < self.y + self.h
 
     def intersects(self, rect):
+        """
+
+        Args:
+            rect (Rect):
+
+        Returns:
+            bool
+        """
         return not (rect.x - rect.w > self.x + self.w or
                     rect.x + rect.w < self.x - self.w or
                     rect.y - rect.h > self.y + self.h or
@@ -30,7 +79,18 @@ class Rect(object):
 
 
 class QuadTree(object):
+    """
+
+    """
+
     def __init__(self, rect, capacity):
+        """
+
+        Args:
+            rect (Rect):
+            capacity (int):
+        """
+
         self.rect = rect
         self.capacity = capacity
         self.points = []
@@ -42,6 +102,15 @@ class QuadTree(object):
         self.south_east_QT = None
 
     def insert(self, point):
+        """
+
+        Args:
+            point (Point):
+
+        Returns:
+            bool
+        """
+
         if not self.rect.collide(point):
             return False
 
@@ -63,6 +132,12 @@ class QuadTree(object):
             return False
 
     def subdiv(self):
+        """
+
+        Returns:
+            None
+        """
+
         nw = Rect(self.rect.x - self.rect.w / 2, self.rect.y - self.rect.h / 2,
                   self.rect.w / 2, self.rect.h / 2)
         self.north_west_QT = QuadTree(nw, self.capacity)
@@ -82,6 +157,15 @@ class QuadTree(object):
         self.divided = True
 
     def qurey(self, rect):
+        """
+
+        Args:
+            rect (Rect):
+
+        Returns:
+            list
+        """
+
         found_points = []
         if self.rect.intersects(rect):
             found_points.extend(filter(lambda p: rect.collide(p), self.points))

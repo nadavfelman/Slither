@@ -22,7 +22,7 @@ the value of the enum is the value of the type in the protocol
 
 """
 
-
+# Enum for type
 class Type:
     # general
     ERROR = 0
@@ -41,6 +41,7 @@ class Type:
     ORB = 7
 
 
+# Enum for subtypes
 class Subtype:
     class ERROR:
         name_error = 0
@@ -449,6 +450,7 @@ def __game_start_parser(data):
     return kwargs
 
 
+# this "translates" the type and subtype to the matching parsing function
 DISPATCHER = {
     (Type.ERROR, Subtype.ERROR.name_error): __error_parser,
     (Type.ERROR, Subtype.ERROR.full_server): __error_parser,
@@ -476,10 +478,20 @@ DISPATCHER = {
 
 
 def parse(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
     kwargs = {}
     kwargs['type'] = struct.unpack('!H', data[0:2])[0]
     kwargs['subtype'] = struct.unpack('!H', data[2:4])[0]
 
+    # this gets the matching parsing function from the dispathcer and calls it
+    # with the data without the type and subtype.
     additional_kwargs = DISPATCHER[kwargs['type'], kwargs['subtype']](data[4:])
     kwargs.update(additional_kwargs)
     return kwargs
@@ -492,24 +504,47 @@ Additional functions
 
 
 def add_length(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
     length = len(data)
 
     if length > 65536:
-        raise ValueError(
-            'length of the packet cant be more than 65536. ({})'.format(length))
+        raise ValueError('length of the packet cant be more than 65536. ({})'.format(length))
 
     length = struct.pack('!H', len(data))
     return length + data
 
 
-KEY_SIZE = 32
+KEY_SIZE = 32  # key is made with sha256 (32 bytes)
 
 
 def key(obj):
+    """
+
+    Args:
+        obj:
+
+    Returns:
+
+    """
     return sha256(str(id(obj))).digest()
 
 
 def hex_con(data):
+    """
+
+    Args:
+        data:
+
+    Returns:
+
+    """
     return ''.join([r'\x{:x}'.format(ord(c)) for c in data])
 
 
@@ -522,6 +557,15 @@ this functions use a length before the message for safe transfer
 
 
 def send_data(sock, data):
+    """
+
+    Args:
+        sock:
+        data:
+
+    Returns:
+
+    """
     sock.send(add_length(data))
     # print 'send >', hex_con(data)
 
@@ -530,6 +574,14 @@ LENGTH_HEADER_SIZE = 2
 
 
 def recv_data(sock):
+    """
+
+    Args:
+        sock:
+
+    Returns:
+
+    """
     length_str = ''
     length = 0
     while len(length_str) < LENGTH_HEADER_SIZE:

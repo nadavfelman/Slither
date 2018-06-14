@@ -9,40 +9,109 @@ import render
 
 
 class Point(object):
+    """
+
+    """
+
     def __init__(self, x, y):
+        """
+
+        Args:
+            x:
+            y:
+        """
         self.x = x
         self.y = y
 
     def __str__(self):
+        """
+
+        Returns:
+
+        """
         return 'Point{{x: {}, y: {}}}'.format(self.x, self.y)
 
     def __repr__(self):
+        """
+
+        Returns:
+
+        """
         return self.__str__()
 
     @property
     def pos(self):
+        """
+
+        Returns:
+
+        """
         return self.x, self.y
 
     @pos.setter
     def pos(self, pos):
+        """
+
+        Args:
+            pos:
+
+        Returns:
+
+        """
         self.x, self.y = pos
 
     def copy(self):
+        """
+
+        Returns:
+
+        """
         return Point(self.x, self.y)
 
 
 class Circle(object):
+    """
+
+    """
+
     def __init__(self, point, radius):
+        """
+
+        Args:
+            point:
+            radius:
+
+        Returns:
+
+        """
         self.point = point
         self.radius = radius
 
     def __str__(self):
+        """
+
+        Returns:
+
+        """
         return 'Circle{{x: {}, y: {}, radius: {}}}'.format(self.point.x, self.point.y, self.radius)
 
     def __repr__(self):
+        """
+
+        Returns:
+
+        """
         return self.__str__()
 
     def collide(self, other):
+        """
+
+        Args:
+            other:
+
+        Returns:
+
+        """
         dx = self.point.x - other.point.x
         dy = self.point.y - other.point.y
         distance = (dx ** 2 + dy ** 2) ** 0.5
@@ -56,14 +125,34 @@ class Section(Circle):
     """
 
     def __init__(self, point, radius, angle=0):
+        """
+
+        Args:
+            point:
+            radius:
+            angle:
+        """
         super(Section, self).__init__(point, radius)
         self.angle = angle
 
     @property
     def distance(self):
+        """
+
+        Returns:
+
+        """
         return self.radius / 1.4
 
     def direct_to(self, point):
+        """
+
+        Args:
+            point:
+
+        Returns:
+
+        """
         self_x, self_y = self.point.pos
         loc_x, loc_y = point.pos
         dx = loc_x - self_x
@@ -71,16 +160,40 @@ class Section(Circle):
         self.angle = math.atan2(dy, dx)
 
     def next_location(self):
+        """
+
+        Returns:
+
+        """
+
         next_point = self.point.copy()
         next_point.x += self.distance * math.cos(self.angle)
         next_point.y += self.distance * math.sin(self.angle)
         return next_point
 
     def move(self, distance):
+        """
+
+        Args:
+            distance:
+
+        Returns:
+
+        """
+
         self.point.x += distance * math.cos(self.angle)
         self.point.y += distance * math.sin(self.angle)
 
     def relocate(self, point, max_move=None):
+        """
+
+        Args:
+            point:
+            max_move:
+
+        Returns:
+
+        """
         # break out if already in place
         if self.next_location().pos == point.pos:
             return
@@ -130,6 +243,12 @@ class Snake(object):
     SHADOW_TAIL_COLOR = colors.GRAY126
 
     def __init__(self, point, name):
+        """
+
+        Args:
+            point:
+            name:
+        """
         self.name = name
         self._mass = 0
 
@@ -142,41 +261,97 @@ class Snake(object):
         self.mass = Snake.DEFAULT_MASS
 
     def __str__(self):
+        """
+
+        Returns:
+
+        """
         return 'snake obj'
 
     def __repr__(self):
+        """
+
+        Returns:
+
+        """
         return 'snake obj'
 
     @property
     def radius(self):
+        """
+
+        Returns:
+
+        """
         return Snake.DEFAULT_RADIUS
 
     @property
     def length(self):
+        """
+
+        Returns:
+
+        """
         return int(self.mass / 100 + 10)
 
     @property
     def location(self):
+        """
+
+        Returns:
+
+        """
         return self.head.point.pos
 
     @property
     def angle(self):
+        """
+
+        Returns:
+
+        """
         return self.head.angle
 
     @angle.setter
     def angle(self, angle):
+        """
+
+        Args:
+            angle:
+
+        Returns:
+
+        """
         self.head.angle = angle
 
     @property
     def mass(self):
+        """
+
+        Returns:
+
+        """
         return self._mass
 
     @mass.setter
     def mass(self, mass):
+        """
+
+        Args:
+            mass:
+
+        Returns:
+
+        """
         self._mass = int(mass)
         self.update_length()
 
     def update_length(self):
+        """
+
+        Returns:
+
+        """
         length = int(self.length)
         dl = len(self.tail) - length
 
@@ -194,6 +369,14 @@ class Snake(object):
             self.tail = self.tail[0: -abs(dl)]
 
     def relocate(self, point):
+        """
+
+        Args:
+            point:
+
+        Returns:
+
+        """
         self.head.relocate(point)
         previous_point = self.head.point
         for sector in self.tail:
@@ -201,10 +384,30 @@ class Snake(object):
             previous_point = sector.point
 
     def render(self, surface, xoff=0, yoff=0):
+        """
+
+        Args:
+            surface:
+            xoff:
+            yoff:
+
+        Returns:
+
+        """
         self.render_snake(surface, xoff=xoff, yoff=yoff)
         self.render_name(surface,xoff=xoff, yoff=yoff)
 
     def render_snake(self, surface, xoff=0, yoff=0):
+        """
+
+        Args:
+            surface:
+            xoff:
+            yoff:
+
+        Returns:
+
+        """
         # draw trail
         # matrix of all the point in the trail
         matrix = [sector.point.pos for sector in self.tail[::-1]]
@@ -245,6 +448,16 @@ class Snake(object):
                            pos, self.radius)  # draw the joint
 
     def render_name(self, surface, xoff=0, yoff=0):
+        """
+
+        Args:
+            surface:
+            xoff:
+            yoff:
+
+        Returns:
+
+        """
         size = Snake.NAME_FONT_SIZE
         color = Snake.NAME_FONT_COLOR
 
@@ -257,6 +470,17 @@ class Snake(object):
 
     @staticmethod
     def create_snake(point, name, mass, tail):
+        """
+
+        Args:
+            point:
+            name:
+            mass:
+            tail:
+
+        Returns:
+
+        """
         s = Snake(point, name)
         s.mass = mass
         for i, pos in enumerate(tail):
@@ -264,6 +488,16 @@ class Snake(object):
         return s
 
     def update_snake(self, mass, head, tail):
+        """
+
+        Args:
+            mass:
+            head:
+            tail:
+
+        Returns:
+
+        """
         self.head.point.pos = head
         self.mass = mass
         for i, pos in enumerate(tail):
@@ -279,6 +513,12 @@ class PlayerSnake(Snake):
     BOOST_SPEED = 5
 
     def __init__(self, location, name):
+        """
+
+        Args:
+            location:
+            name:
+        """
         super(PlayerSnake, self).__init__(location, name)
 
         self.regular_speed = PlayerSnake.REGULAR_SPEED
@@ -286,6 +526,11 @@ class PlayerSnake(Snake):
         self.current_speed = self.regular_speed
 
     def move(self):
+        """
+
+        Returns:
+
+        """
         self.head.move(self.current_speed)
         previous_point = self.head.point
         for sector in self.tail:
@@ -293,6 +538,15 @@ class PlayerSnake(Snake):
             previous_point = sector.point
 
     def set_angle(self, angle, limit=None):
+        """
+
+        Args:
+            angle:
+            limit:
+
+        Returns:
+
+        """
         if limit:
             if abs(self.angle - angle) > math.pi:
                 dir_control = -1
@@ -315,20 +569,60 @@ class PlayerSnake(Snake):
             self.head.angle = angle
 
     def direct_to(self, point):
+        """
+
+        Args:
+            point:
+
+        Returns:
+
+        """
         self.head.direct_to(point)
 
     def tail_collide(self, circle):
+        """
+
+        Args:
+            circle:
+
+        Returns:
+
+        """
         for t in self.tail:
             if t.collide(circle):
                 return True
 
     def head_collide(self, circle):
+        """
+
+        Args:
+            circle:
+
+        Returns:
+
+        """
         return self.head.collide(circle)
 
     def any_collide(self, circle):
+        """
+
+        Args:
+            circle:
+
+        Returns:
+
+        """
         return self.tail_collide(circle) or self.head_collide(circle)
 
     def boarders_collide(self, board_rect):
+        """
+
+        Args:
+            board_rect:
+
+        Returns:
+
+        """
         if any([t.point.y - t.radius < board_rect.top for t in self.tail]):
             return True
         elif any([t.point.y + t.radius > board_rect.bottom for t in self.tail]):
@@ -361,15 +655,12 @@ class Orb(Circle):
 
     def __init__(self, center, mass=None, color=None):
         """
-        [summary]
 
-        Arguments:
-            x {[type]} -- [description]
-            y {[type]} -- [description]
-            mass {[type]} -- [description]
-            color {[type]} -- [description]
+        Args:
+            center:
+            mass:
+            color:
         """
-
         self.color = color or random.choice(Orb.COLORS)
         self.mass = mass or random.choice(range(Orb.MIN_MASS, Orb.MAX_MASS + 1, 10))
 
@@ -381,6 +672,16 @@ class Orb(Circle):
         super(Orb, self).__init__(center, radius)
 
     def render(self, surface, xoff=0, yoff=0):
+        """
+
+        Args:
+            surface:
+            xoff:
+            yoff:
+
+        Returns:
+
+        """
         x, y = self.point.pos
         offsetted_x = int(round(x + xoff))
         offsetted_y = int(round(y + yoff))

@@ -159,6 +159,14 @@ class ControlScreen(elements.Screen):
         self.set_actives(self.main_win)
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
         if self.game and not self.game.game_start_sub.active:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -172,14 +180,35 @@ class PrimaryScreen(elements.Screen):
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
         def stop_running():
+            """
+
+            Returns:
+                None
+            """
             ctrlVars.running = False
 
         def show_singleplayer_win():
+            """
+
+            Returns:
+                None
+            """
             self.set_actives(self.singleplayer_win)
 
         def show_multiplayer_win():
+            """
+
+            Returns:
+                None
+            """
             self.set_actives(self.multiplayer_win)
 
         # create screen elements
@@ -286,13 +315,17 @@ class PrimaryScreen(elements.Screen):
 
 
 class SingleplayerInfo(elements.Screen):
-    """[summary]
-
-    Arguments:
-        screen {[type]} -- [description]
+    """
+    [summary]
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
 
         # create screen elements
@@ -363,6 +396,12 @@ class MultiplayerInfo(elements.Screen):
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
 
         # create screen elements
@@ -446,6 +485,12 @@ class MultiplayerConnection(elements.Screen):
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
 
         # create screen elements
@@ -541,6 +586,14 @@ class MultiplayerConnection(elements.Screen):
         # set active sub windows
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.join_button.fnc()
@@ -555,13 +608,31 @@ class GameWindow(elements.Screen):
     """
 
     def __init__(self, w, h, ip, name):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+            ip (str): a valid server ip.
+            name (str): name of the player.
+        """
         # create buttons` functions
         def info_update():
+            """
+
+            Returns:
+                None
+            """
             player = self.client.get_player()
             if player:
                 self.game_gui.player_info.text = 'Current mass: ' + str(player.mass)
 
         def leaderboard_update():
+            """
+
+            Returns:
+                None
+            """
             string = ''
             string += 'Players Leaderboard:\n'
             count = 0
@@ -615,6 +686,11 @@ class GameWindow(elements.Screen):
         self.set_actives(self.game_start_sub)
 
     def update(self):
+        """
+
+        Returns:
+            None
+        """
         if self.client.key not in self.client.snakes:
             self.set_actives(self.game_start_sub)
         else:
@@ -628,6 +704,12 @@ class GameGUI(elements.Screen):
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
 
         # create screen elements
@@ -689,6 +771,12 @@ class GameStartSubwindow(elements.Screen):
     """
 
     def __init__(self, w, h):
+        """
+
+        Args:
+            w (int): width of the screen.
+            h (int): height of the screen.
+        """
         # create buttons` functions
 
         # create screen elements

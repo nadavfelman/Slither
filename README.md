@@ -1,7 +1,7 @@
 # Slither
-###Summary
+### Summary
 This is a **slither.io** project done in python. <br>
-This is multiplayer and can be played with other people. <br>
+This is multiplayer and should be played with other people. <br>
 <br>
 ### TODO
 - [ ] Add speed moving

@@ -15,21 +15,50 @@ class BaseElement(object):
     """
 
     def __init__(self):
+        """
+
+        """
         self.need_rerender = False
         self.need_update = False
         self.need_events = False
         self.need_closing = False
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         pass
 
     def update(self):
+        """
+
+        Returns:
+            None
+        """
         pass
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
         pass
 
     def close(self):
+        """
+
+        Returns:
+            None
+        """
         pass
 
 
@@ -50,6 +79,24 @@ class Button(BaseElement):
                  hover=None, click=None, border_color=None,
                  border_size=None, fnc=None, font_name=None,
                  font_size=None):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            w (int):
+            h (int):
+            text (str):
+            text_color (tuple):
+            regular (tuple):
+            hover (tuple):
+            click (tuple):
+            border_color (tuple):
+            border_size (int):
+            fnc (function):
+            font_name (str):
+            font_size (int):
+        """
 
         super(Button, self).__init__()
 
@@ -72,22 +119,53 @@ class Button(BaseElement):
         self.fnc = fnc
 
     def on_button(self):
+        """
+
+        Returns:
+            bool
+        """
         return self.rect.collidepoint(pygame.mouse.get_pos())
 
     def has_clicked(self):
+        """
+
+        Returns:
+            bool
+        """
         return self.on_button() and pygame.mouse.get_pressed()[0]
 
     def update(self):
+        """
+
+        Returns:
+            None
+        """
         if self.has_clicked() and callable(self.fnc):
             self.fnc()
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.rect.collidepoint(event.pos) and callable(self.fnc):
                     self.fnc()
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         if self.on_button():
             if pygame.mouse.get_pressed()[0]:
                 self.render_clicked(surface)
@@ -104,15 +182,47 @@ class Button(BaseElement):
             self.render_text(surface)
 
     def render_regular(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         pygame.draw.rect(surface, self.regular, self.rect, 0)
 
     def render_hover(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         pygame.draw.rect(surface, self.hover, self.rect, 0)
 
     def render_clicked(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         pygame.draw.rect(surface, self.click, self.rect, 0)
 
     def render_text(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         txt_rect = self.txt_surface.get_rect()
         txt_rect.center = self.rect.center
         surface.blit(self.txt_surface, txt_rect.topleft)
@@ -136,6 +246,23 @@ class InputBox(BaseElement):
                  active_color=None, inactive_color=None,
                  active_tcolor=None, inactive_tcolor=None,
                  font_name=None, font_size=None, border_size=None):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            w (int):
+            h (int):
+            text (str):
+            base_color (tuple):
+            active_color (tuple):
+            inactive_color (tuple):
+            active_tcolor (tuple):
+            inactive_tcolor (tuple):
+            font_name (str):
+            font_size (int):
+            border_size (int):
+        """
 
         super(InputBox, self).__init__()
 
@@ -161,6 +288,14 @@ class InputBox(BaseElement):
         self.limit = 16
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -207,12 +342,20 @@ class InputBox(BaseElement):
                 self.txt_surface = self.font.render(
                     self.text, True, self.tcolor)
 
-    def render(self, screen):
-        pygame.draw.rect(screen, self.base_color, self.rect)
-        screen.blit(self.txt_surface, (self.rect.x + self.mirgins[1],
-                                       self.rect.y + self.mirgins[0]))
+    def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
+        pygame.draw.rect(surface, self.base_color, self.rect)
+        surface.blit(self.txt_surface, (self.rect.x + self.mirgins[1],
+                                        self.rect.y + self.mirgins[0]))
         if self.border_size:
-            pygame.draw.rect(screen, self.color, self.rect, self.border_size)
+            pygame.draw.rect(surface, self.color, self.rect, self.border_size)
 
 
 class Container(BaseElement):
@@ -225,18 +368,38 @@ class Container(BaseElement):
     BORDER_SIZE = 0
 
     def __init__(self, x, y, w, h, color=None, border_color=None, border_size=None):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            w (int):
+            h (int):
+            color (tuple):
+            border_color (tuple):
+            border_size (int):
+        """
+
         super(Container, self).__init__()
 
-        self.rect = pygame.Rect(int(round(x)), int(
-            round(y)), int(round(w)), int(round(h)))
+        self.rect = pygame.Rect(int(round(x)), int(round(y)),
+                                int(round(w)), int(round(h)))
         self.color = color or Container.COLOR_BASE
         self.border_color = border_color or Container.COLOR_SECONDARY
         self.border_size = int(round(border_size or Container.BORDER_SIZE))
 
-    def render(self, display):
-        pygame.draw.rect(display, self.color, self.rect)
+    def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
+        pygame.draw.rect(surface, self.color, self.rect)
         if self.border_size:
-            pygame.draw.rect(display, self.border_color,
+            pygame.draw.rect(surface, self.border_color,
                              self.rect, self.border_size)
 
 
@@ -250,10 +413,22 @@ class Text(BaseElement):
     SIZE = 48
 
     def __init__(self, x, y, text, font_name=None, size=None, color=None, center=False):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            text (str):
+            font_name (str):
+            size (int):
+            color (tuple):
+            center (bool):
+        """
+
         super(Text, self).__init__()
 
-        self.font = pygame.font.Font(
-            font_name or Text.FONT_NAME, int(round(size or Text.SIZE)))
+        self.font = pygame.font.Font(font_name or Text.FONT_NAME,
+                                     int(round(size or Text.SIZE)))
         self._text = ''
         self.text_surfaces = []
 
@@ -266,10 +441,23 @@ class Text(BaseElement):
 
     @property
     def text(self):
+        """
+
+        Returns:
+            str
+        """
         return self._text
 
     @text.setter
     def text(self, text):
+        """
+
+        Args:
+            text:
+
+        Returns:
+            None
+        """
         self._text = text
         self.text_surfaces = []
 
@@ -279,6 +467,14 @@ class Text(BaseElement):
             self.text_surfaces.append(text_surface)
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         for line_num, text_surface in enumerate(self.text_surfaces):
             text_rect = text_surface.get_rect()
             pos = (self.x, self.y + (line_num * self.font.get_height()))
@@ -295,6 +491,14 @@ class Image(BaseElement):
     """
 
     def __init__(self, x, y, image_path, scale=1):
+        """
+
+        Args:
+            x (int):
+            y (int):
+            image_path (str):
+            scale (int):
+        """
         super(Image, self).__init__()
 
         self.x = int(round(x))
@@ -306,6 +510,14 @@ class Image(BaseElement):
             self.image, new_size).convert()
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         surface.blit(self.image, (self.x, self.y))
 
 
@@ -318,6 +530,17 @@ class Line(BaseElement):
     WIDTH = 1
 
     def __init__(self, x1, y1, x2, y2, width=None, color=None):
+        """
+
+        Args:
+            x1 (int):
+            y1 (int):
+            x2 (int):
+            y2 (int):
+            width (int):
+            color (tuple):
+        """
+
         super(Line, self).__init__()
 
         self.start_pos = (int(round(x1)), int(round(y1)))
@@ -326,6 +549,14 @@ class Line(BaseElement):
         self.color = color or Line.COLOR
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
         pygame.draw.line(surface, self.color, self.start_pos,
                          self.end_pos, self.width)
 
@@ -351,6 +582,10 @@ class Screen(object):
     """
 
     def __init__(self):
+        """
+
+        """
+
         self.elements_objs = []
         self.windows_objs = []
 
@@ -358,6 +593,15 @@ class Screen(object):
         self.active = True
 
     def render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
+
         if self.next_render_full:
             self.full_render(surface)
             self.next_render_full = False
@@ -365,6 +609,15 @@ class Screen(object):
             self.partial_render(surface)
 
     def full_render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
+
         # stack = inspect.stack()
         # the_class = stack[1][0].f_locals["self"].__class__
         # the_method = stack[1][0].f_code.co_name
@@ -379,6 +632,15 @@ class Screen(object):
                 window.render(surface)
 
     def partial_render(self, surface):
+        """
+
+        Args:
+            surface (pygame.Surface):
+
+        Returns:
+            None
+        """
+
         # stack = inspect.stack()
         # the_class = stack[1][0].f_locals["self"].__class__
         # the_method = stack[1][0].f_code.co_name
@@ -393,6 +655,12 @@ class Screen(object):
                 window.render(surface)
 
     def update(self):
+        """
+
+        Returns:
+            None
+        """
+
         for element in self.elements_objs:
             if getattr(element, 'need_update', None):
                 element.update()
@@ -402,6 +670,15 @@ class Screen(object):
                 window.update()
 
     def handle_event(self, event):
+        """
+
+        Args:
+            event (pygame.event.Event):
+
+        Returns:
+            None
+        """
+
         for element in self.elements_objs:
             if getattr(element, 'need_events', None):
                 element.handle_event(event)
@@ -411,6 +688,12 @@ class Screen(object):
                 window.handle_event(event)
 
     def close(self):
+        """
+
+        Returns:
+            None
+        """
+
         for element in self.elements_objs:
             if getattr(element, 'need_closing', None):
                 element.close()
@@ -420,6 +703,15 @@ class Screen(object):
                 window.close()
 
     def set_actives(self, *args):
+        """
+
+        Args:
+            *args:
+
+        Returns:
+            None
+        """
+
         for window in self.windows_objs:
             if window in args:
                 window.active = True
