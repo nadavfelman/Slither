@@ -103,6 +103,9 @@ class ServerDataBase(object):
         Returns:
 
         """
+        if not self.snakes and len(self.orbs) >= ServerDataBase.ORB_LIMIT:
+            return
+
         self.last_update = []
         orb_quad_tree = QuadTree.QuadTree(QuadTree.Rect(self.board.centerx,
                                                         self.board.centery, self.board.width / 2,
