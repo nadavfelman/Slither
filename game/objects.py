@@ -114,7 +114,7 @@ class Circle(object):
         """
         dx = self.point.x - other.point.x
         dy = self.point.y - other.point.y
-        distance = (dx ** 2 + dy ** 2) ** 0.5
+        distance = math.sqrt(dx ** 2 + dy ** 2)
         return self.radius + other.radius >= distance
 
 

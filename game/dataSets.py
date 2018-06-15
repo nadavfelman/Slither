@@ -2,7 +2,7 @@ import objects
 import connection.protocol as protocol
 import pygame
 import random
-import  QuadTree
+import QuadTree
 
 
 class ServerDataBase(object):
